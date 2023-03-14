@@ -12,14 +12,14 @@ config = require('config')
 -- Initial Settings
 
 local defaults = {
-   trusts = {
-      t1 = 'None', 
-      t2 = 'None', 
-      t3 = 'None', 
-      t4 = 'None', 
-      t5 = 'None',
-   },
+   trusts = {}
 }
+
+defaults.trusts.trust1 = 'None'
+defaults.trusts.trust2 = 'None'
+defaults.trusts.trust3 = 'None'
+defaults.trusts.trust4 = 'None'
+defaults.trusts.trust5 = 'None'
 
 settings = config.load(defaults)
 settings:save()
@@ -73,8 +73,9 @@ end)
 
 function show_trusts()
    local i = 1
-   for trust in pairs(settings.trusts) do
-      log('Trust ', i, trust)
+
+   for trust, name in pairs(settings.trusts) do
+      log('Trust ', i, name)
       i = i + 1
    end
 end
