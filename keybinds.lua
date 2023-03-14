@@ -1,18 +1,24 @@
 _addon.name = 'KeyBinds'
 _addon.author = 'Picklepants'
-_addon.version = 0.0.0
+_addon.version = '0.0.0'
 _addon.commands = {'kb', 'keybinds'}
 _addon.language = 'english'
 
--- Keybinds
+-- Windower Libraries
+require('logger')
 
-windower.register_event('load',funciton()
-   windower.send_command('bind ~1 mount')
+-- Globals
+
+-- Keybinds
+windower.register_event('load', function()
+   windower.send_command('bind ~1 kb mount')
 end)
 
 windower.register_event('addon command', function(command,...)
    command = command and command:lower()
    if command == 'mount' then
-      input "/mount Raptor"
+      if windower.ffxi
+      windower.send_command('input /mount raptor')
+      notice("Mounting Raptor")
    end
 end)
