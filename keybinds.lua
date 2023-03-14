@@ -6,6 +6,23 @@ _addon.language = 'english'
 
 -- Windower Libraries
 require('logger')
+require('tables')
+config = require('config')
+
+-- Initial Settings
+
+local defaults = {
+   trusts = {
+      t1 = 'None', 
+      t2 = 'None', 
+      t3 = 'None', 
+      t4 = 'None', 
+      t5 = 'None',
+   },
+}
+
+settings = config.load(defaults)
+settings:save()
 
 -- Keybinds
 windower.register_event('load', function()
@@ -33,6 +50,9 @@ windower.register_event('addon command', function(command,...)
          windower.send_command('input /mount raptor')
       end
 
+   elseif command == 'showtr' then
+      show_trusts()
+
    elseif command == 'warp' then
       local equipment = windower.ffxi.get_items('equipment')
       local bag = equipment['right_ring_bag']
@@ -48,3 +68,13 @@ windower.register_event('addon command', function(command,...)
 
    
 end)
+
+-- Trust Functions
+
+function show_trusts()
+   local i = 1
+   for trust in pairs(settings.trusts) do
+      log('Trust ', i, trust)
+      i = i + 1
+   end
+end
