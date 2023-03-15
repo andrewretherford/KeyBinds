@@ -47,6 +47,9 @@ windower.register_event('addon command', function(command, ...)
    elseif cmd == 'at' or cmd == 'addtrust' then
       add_trust(unpack(args))
 
+   elseif cmd == 'rt' or cmd == 'replacetrust' then
+      remove_trust(unpack(args))
+
    elseif cmd == 'warp' then
       warp()
    end
@@ -97,7 +100,21 @@ function add_trust(name, slot)
    settings[key] = name
    settings:save()
 
-   log(key_name..': '..name)
+   show_trusts()
+end
+
+function remove_trust(slot)
+   local key, key_name = table.unpack(parse_slot(slot))
+
+   if key == nil then
+      log('Enter a valid slot number (1-5)')
+      return
+   end
+
+   settings[key] = 'None'
+   settings:save()
+
+   show_trusts()
 end
 
 -- Warp Function
