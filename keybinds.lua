@@ -7,19 +7,20 @@ _addon.language = 'english'
 -- Windower Libraries
 require('logger')
 require('tables')
+require('strings')
 config = require('config')
 
 -- Initial Settings
 
 local defaults = {
-   trusts = {}
+   trusts = T{}
 }
 
-defaults.trusts.trust1 = 'None'
-defaults.trusts.trust2 = 'None'
-defaults.trusts.trust3 = 'None'
-defaults.trusts.trust4 = 'None'
-defaults.trusts.trust5 = 'None'
+defaults.trusts['Trust 1'] = 'None'
+defaults.trusts['Trust 2'] = 'None'
+defaults.trusts['Trust 3'] = 'None'
+defaults.trusts['Trust 4'] = 'None'
+defaults.trusts['Trust 5'] = 'None'
 
 settings = config.load(defaults)
 settings:save()
@@ -31,7 +32,8 @@ windower.register_event('load', function()
    windower.send_command('bind ~3 kb warp')
 end)
 
-windower.register_event('addon command', function(command,...)
+windower.register_event('addon command', function(command, ...)
+   local arg = (...) and (...):lower()
    command = command and command:lower()
 
    if command == 'mount' then
@@ -52,6 +54,9 @@ windower.register_event('addon command', function(command,...)
 
    elseif command == 'showtr' then
       show_trusts()
+
+   elseif command == 'addtr' then
+      add_trust(args[1], args[2])
 
    elseif command == 'warp' then
       local equipment = windower.ffxi.get_items('equipment')
@@ -78,4 +83,9 @@ function show_trusts()
       log('Trust ', i, name)
       i = i + 1
    end
+end
+
+function add_trust(name, slot)
+   settings.trusts['trust'..slot] = name
+   settings:save()
 end
