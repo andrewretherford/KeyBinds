@@ -10,6 +10,10 @@ require('tables')
 require('strings')
 config = require('config')
 
+-- Resource Imports
+
+require('helper_functions')
+
 -- Default Settings
 
 local defaults = {
@@ -31,7 +35,7 @@ windower.register_event('load', function()
 end)
 
 windower.register_event('addon command', function(command, ...)
-   command = command and command:lower()
+   local cmd = command and command:lower()
    local args = table.concat({...}, ' ')
    local arg_table = {}
    
@@ -39,16 +43,16 @@ windower.register_event('addon command', function(command, ...)
       table.insert(arg_table, argument)
    end
 
-   if command == 'mount' then
+   if cmd == 'mount' then
       mount()
 
-   elseif command == 'showtr' then
+   elseif cmd == 'st' or cmd == 'showtrust' then
       show_trusts()
 
-   elseif command == 'addtr' then
+   elseif cmd == 'at' or cmd == 'addtrust' then
       add_trust(unpack(arg_table))
 
-   elseif command == 'warp' then
+   elseif cmd == 'warp' then
       warp()
    end
 
@@ -85,29 +89,13 @@ function show_trusts()
 end
 
 function add_trust(name, slot)
-   local key
-   local key_name
+   local key, key_name = table.unpack(parse_slot(slot))
 
-   if slot == '1' then
-      key = 't1'
-      key_name = 'Trust 1'
-   elseif slot == '2' then
-      key = 't2'
-      key_name = 'Trust 2'
-   elseif slot == '3' then
-      key = 't3'
-      key_name = 'Trust 3'
-   elseif slot == '4' then
-      key = 't4'
-      key_name = 'Trust 4'
-   elseif slot == '5' then
-      key = 't5'
-      key_name = 'Trust 5'
-   else
+   if key == nil then
       log('Enter a valid slot number (1-5)')
       return
    end
-
+   
    settings[key] = name
    settings:save()
 
