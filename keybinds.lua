@@ -10,17 +10,15 @@ require('tables')
 require('strings')
 config = require('config')
 
--- Initial Settings
+-- Default Settings
 
 local defaults = {
-   trusts = T{}
+   t1 = 'None',
+   t2 = 'None',
+   t3 = 'None',
+   t4 = 'None',
+   t5 = 'None'
 }
-
-defaults.trusts['Trust 1'] = 'None'
-defaults.trusts['Trust 2'] = 'None'
-defaults.trusts['Trust 3'] = 'None'
-defaults.trusts['Trust 4'] = 'None'
-defaults.trusts['Trust 5'] = 'None'
 
 settings = config.load(defaults)
 settings:save()
@@ -77,12 +75,11 @@ end)
 -- Trust Functions
 
 function show_trusts()
-   local i = 1
-
-   for trust, name in pairs(settings.trusts) do
-      log('Trust ', i, name)
-      i = i + 1
-   end
+   log('Trust 1: '..settings.t1)
+   log('Trust 2: '..settings.t2)
+   log('Trust 3: '..settings.t3)
+   log('Trust 4: '..settings.t4)
+   log('Trust 5: '..settings.t5)
 end
 
 function add_trust(name, slot)
