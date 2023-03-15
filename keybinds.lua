@@ -50,6 +50,9 @@ windower.register_event('addon command', function(command, ...)
    elseif cmd == 'rt' or cmd == 'replacetrust' then
       remove_trust(unpack(args))
 
+   elseif cmd == 'trusts' then
+      summon_trusts()
+
    elseif cmd == 'warp' then
       warp()
    end
@@ -115,6 +118,11 @@ function remove_trust(slot)
    settings:save()
 
    show_trusts()
+end
+
+function summon_trusts()
+   windower.send_command(
+      'input /ma "'..settings.t1..'" <me>; wait 6; input /ma "'..settings.t2..'" <me>; wait 6; input /ma "'..settings.t3..'" <me>; wait 6; input /ma "'..settings.t4..'" <me>; wait 6; input /ma "'..settings.t5..'" <me>')
 end
 
 -- Warp Function
