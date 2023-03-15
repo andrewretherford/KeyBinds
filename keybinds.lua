@@ -36,12 +36,7 @@ end)
 
 windower.register_event('addon command', function(command, ...)
    local cmd = command and command:lower()
-   local args = table.concat({...}, ' ')
-   local arg_table = {}
-   
-   for argument in args:gmatch("%S+") do
-      table.insert(arg_table, argument)
-   end
+   local args = {...}
 
    if cmd == 'mount' then
       mount()
@@ -50,7 +45,7 @@ windower.register_event('addon command', function(command, ...)
       show_trusts()
 
    elseif cmd == 'at' or cmd == 'addtrust' then
-      add_trust(unpack(arg_table))
+      add_trust(unpack(args))
 
    elseif cmd == 'warp' then
       warp()
@@ -91,7 +86,10 @@ end
 function add_trust(name, slot)
    local key, key_name = table.unpack(parse_slot(slot))
 
-   if key == nil then
+   if not name then
+      log('Correct syntax is //kb addtrust "<name of trust>" <slot number>\nExample: //kb addtrust "Tenzen" 1')
+      return
+   elseif key == nil then
       log('Enter a valid slot number (1-5)')
       return
    end
