@@ -18,7 +18,7 @@ require('strings')
 ----------------------------------
 
 windower.register_event('load', function()
-   windower.send_command('bind ~1 send all //kb mount')
+   windower.send_command('bind ~1 send @all //kb mount')
    windower.send_command('bind ~2 tm summontrusts')
    windower.send_command('bind ~3 kb warp')
 end)
@@ -51,9 +51,9 @@ function warp()
    local item_data = windower.ffxi.get_items(bag, index)
 
    if item_data.id == 28540 then
-      windower.send_command('input /item "warp ring" <me>')
+      windower.send_command("send @all input /item 'warp ring' <me>")
    else
-      windower.send_command('input /equip ring2 "warp ring"; wait 10; input /item "warp ring" <me>')
+      windower.send_command("send @all input /equip ring2 'warp ring'; wait 11; send @all input /item 'warp ring' <me>")
    end   
 end
 
