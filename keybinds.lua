@@ -29,7 +29,7 @@ settings:save()
 
 -- Keybinds
 windower.register_event('load', function()
-   windower.send_command('bind ~1 kb mount')
+   windower.send_command('bind ~1 send all //kb mount')
    windower.send_command('bind ~2 kb trusts')
    windower.send_command('bind ~3 kb warp')
 end)
@@ -121,8 +121,13 @@ function remove_trust(slot)
 end
 
 function summon_trusts()
-   windower.send_command(
-      'input /ma "'..settings.t1..'" <me>; wait 6; input /ma "'..settings.t2..'" <me>; wait 6; input /ma "'..settings.t3..'" <me>; wait 6; input /ma "'..settings.t4..'" <me>; wait 6; input /ma "'..settings.t5..'" <me>')
+   for key,trust in settings do
+      if trust ~= 'None' then
+         windower.send_command('input /ma "'..settings[key]..'" <me>; wait 6;')
+      end
+   end
+   -- windower.send_command(
+   --    'input /ma "'..settings.t1..'" <me>; wait 6; input /ma "'..settings.t2..'" <me>; wait 6; input /ma "'..settings.t3..'" <me>; wait 6; input /ma "'..settings.t4..'" <me>; wait 6; input /ma "'..settings.t5..'" <me>')
 end
 
 -- Warp Function
