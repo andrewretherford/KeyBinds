@@ -92,40 +92,32 @@ function show_trusts()
    for i=1,5 do
       log('Trust '..i..': '..settings.trusts[i])
    end
-
-   -- log('Trust 1: '..settings.t1)
-   -- log('Trust 2: '..settings.t2)
-   -- log('Trust 3: '..settings.t3)
-   -- log('Trust 4: '..settings.t4)
-   -- log('Trust 5: '..settings.t5)
 end
 
 function add_trust(name, slot)
-   local key, key_name = table.unpack(parse_slot(slot))
+   slot = tonumber(slot)
 
    if not name then
       log('Correct syntax is //kb addtrust "<name of trust>" <slot number>\nExample: //kb addtrust "Tenzen" 1')
       return
-   elseif key == nil then
+   elseif slot <1 or slot > 5 then
       log('Enter a valid slot number (1-5)')
       return
    end
    
-   settings[key] = name
+   settings.trusts[slot] = name
    settings:save()
 
    show_trusts()
 end
 
 function remove_trust(slot)
-   local key, key_name = table.unpack(parse_slot(slot))
-
-   if key == nil then
+   if slot <1 or slot > 5 then
       log('Enter a valid slot number (1-5)')
       return
    end
 
-   settings[key] = 'None'
+   settings[slot] = 'None'
    settings:save()
 
    show_trusts()
