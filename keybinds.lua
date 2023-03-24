@@ -38,15 +38,14 @@ windower.register_event('addon command', function(command, ...)
    if cmd == 'mount' then
       mount()
 
-   elseif cmd == 'st' or cmd == 'showtrust' then
-      show_trusts()
+   elseif cmd == 'ds' or cmd == 'displaysets' then
+      display_sets()
 
    elseif cmd == 'ss' or cmd == 'saveset' then
       save_set(table.concat(args, " "))
       
-   elseif cmd == 'rt' or cmd == 'replacetrust' then
-      log(slot)
-      -- remove_trust(slot)
+   elseif cmd == 'rs' or cmd == 'removeset' then
+      remove_set(table.concat(args, " "))
 
    elseif cmd == 'summon_trusts' then
       summon_trusts()
@@ -78,22 +77,25 @@ end
 
 -- Trust Functions
 
-function show_trusts()
-   log('Trusts:')
-
-   for i=1,5 do
-      log('Trust '..i..': '..settings.trusts[i])
+function display_sets()
+   log('Trust sets:')
+   for k,v in pairs(settings.trusts) do
+      if v then
+         local name = k:gsub('_', ' ')
+         log(name)
+      end
    end
 end
 
 function save_set(set_name)
    local party = windower.ffxi.get_party()
-   settings.trusts[set_name] = {}
+   saved_name = set_name:gsub('%s', '_')
+   settings.trusts[saved_name] = {}
    
    for i=1, 5 do
       if party['p'..i] then
          if party['p'..i].mob.is_npc then
-            settings.trusts[set_name][i] = trusts:with('models', party['p'..i].mob.models[1]).english
+            settings.trusts[saved_name][i] = trusts:with('models', party['p'..i].mob.models[1]).english
             log(trusts:with('models', party['p'..i].mob.models[1]).english)
          end
       end
@@ -104,16 +106,16 @@ function save_set(set_name)
 
 end
 
-function remove_trust(slot)
-   if slot <1 or slot > 5 then
-      log('Enter a valid slot number (1-5)')
-      return
+function remove_set(set_name)
+   saved_name = set_name:gsub('%s', '_')
+
+   if settings.trusts[saved_name] then
+      settings.trusts = delete_element(settings.trusts, saved_name)
+      settings:save('all')
+      log("Set "..set_name.." has been removed.")
+   else
+      log("That set doesn't exist.")
    end
-
-   settings[slot] = 'None'
-   settings:save()
-
-   show_trusts()
 end
 
 function summon_trusts()
