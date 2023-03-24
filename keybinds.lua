@@ -33,13 +33,13 @@ settings:save()
 -- Keybinds
 windower.register_event('load', function()
    windower.send_command('bind ~1 send all //kb mount')
-   windower.send_command('bind ~2 kb trusts')
+   windower.send_command('bind ~2 kb summon_trusts')
    windower.send_command('bind ~3 kb warp')
 end)
 
 windower.register_event('addon command', function(command, ...)
-   local cmd = command and command:lower()
    local args = {...}
+   local cmd = command and command:lower()
 
    if cmd == 'mount' then
       mount()
@@ -48,19 +48,22 @@ windower.register_event('addon command', function(command, ...)
       show_trusts()
 
    elseif cmd == 'at' or cmd == 'addtrust' then
-      add_trust(unpack(args))
-
+      local slot = args[3] or nil
+      local name = string.gsub(string.lower(table.concat(args, ' ')), "%s%d", "")
+      -- log(name, slot)
+      add_trust(name, slot)
+      
    elseif cmd == 'rt' or cmd == 'replacetrust' then
-      remove_trust(unpack(args))
+      log(slot)
+      -- remove_trust(slot)
 
-   elseif cmd == 'trusts' then
+   elseif cmd == 'summon_trusts' then
       summon_trusts()
 
    elseif cmd == 'warp' then
       warp()
    end
 
-   
 end)
 
 -- Mount Function
