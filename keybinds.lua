@@ -32,7 +32,7 @@ windower.register_event('load', function()
 end)
 
 windower.register_event('addon command', function(command, ...)
-   local args = {...}
+   local args = table.concat({...}, " ")
    local cmd = command and command:lower()
 
    if cmd == 'mount' then
@@ -42,13 +42,13 @@ windower.register_event('addon command', function(command, ...)
       display_sets()
 
    elseif cmd == 'ss' or cmd == 'saveset' then
-      save_set(table.concat(args, " "))
+      save_set(args)
       
    elseif cmd == 'rs' or cmd == 'removeset' then
-      remove_set(table.concat(args, " "))
+      remove_set(args)
 
    elseif cmd == 'summon_trusts' then
-      summon_trusts()
+      summon_trusts(args)
 
    elseif cmd == 'warp' then
       warp()
@@ -78,7 +78,13 @@ end
 -- Trust Functions
 
 function display_sets()
+   if next(settings.trusts) == nil then
+      log('You have no saved sets.')
+      return
+   end
+   
    log('Trust sets:')
+
    for k,v in pairs(settings.trusts) do
       if v then
          local name = k:gsub('_', ' ')
@@ -89,6 +95,12 @@ end
 
 function save_set(set_name)
    local party = windower.ffxi.get_party()
+
+   if party['p1'] == nil then
+      log('You have no summoned trusts to save.')
+      return
+   end
+   
    saved_name = set_name:gsub('%s', '_')
    settings.trusts[saved_name] = {}
    
@@ -103,7 +115,6 @@ function save_set(set_name)
 
    settings:save('all')
    log('Trust set "'..set_name..'" saved.')
-
 end
 
 function remove_set(set_name)
@@ -118,7 +129,7 @@ function remove_set(set_name)
    end
 end
 
-function summon_trusts()
+function summon_trusts(set_name)
    local trust_list = ''
 
    for i=1,5 do
