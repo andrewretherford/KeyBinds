@@ -17,12 +17,14 @@ require('helper_functions')
 -- Default Settings
 
 local defaults = {
-   t1 = 'None',
-   t2 = 'None',
-   t3 = 'None',
-   t4 = 'None',
-   t5 = 'None'
+   trusts = {}
 }
+
+defaults.trusts[1] = 'None'
+defaults.trusts[2] = 'None'
+defaults.trusts[3] = 'None'
+defaults.trusts[4] = 'None'
+defaults.trusts[5] = 'None'
 
 settings = config.load(defaults)
 settings:save()
@@ -51,7 +53,10 @@ windower.register_event('addon command', function(command, ...)
       remove_trust(unpack(args))
 
    elseif cmd == 'trusts' then
-      summon_trusts()
+      log(summoning)
+      if not summoning then
+         summon_trusts()
+      end
 
    elseif cmd == 'warp' then
       warp()
@@ -82,11 +87,17 @@ end
 -- Trust Functions
 
 function show_trusts()
-   log('Trust 1: '..settings.t1)
-   log('Trust 2: '..settings.t2)
-   log('Trust 3: '..settings.t3)
-   log('Trust 4: '..settings.t4)
-   log('Trust 5: '..settings.t5)
+   log('Trusts:')
+
+   for i=1,5 do
+      log('Trust '..i..': '..settings.trusts[i])
+   end
+
+   -- log('Trust 1: '..settings.t1)
+   -- log('Trust 2: '..settings.t2)
+   -- log('Trust 3: '..settings.t3)
+   -- log('Trust 4: '..settings.t4)
+   -- log('Trust 5: '..settings.t5)
 end
 
 function add_trust(name, slot)
@@ -121,11 +132,15 @@ function remove_trust(slot)
 end
 
 function summon_trusts()
-   for key,trust in settings do
+   local trust_list = ''
+
+   for key,trust in ipairs(settings) do
       if trust ~= 'None' then
-         windower.send_command('input /ma "'..settings[key]..'" <me>; wait 6;')
+         trust_list = trust_list..'input /ma "'..trust..'" <me>; wait 6;'
       end
    end
+   log(trust_list)
+   -- windower.send_command(trust_list)
    -- windower.send_command(
    --    'input /ma "'..settings.t1..'" <me>; wait 6; input /ma "'..settings.t2..'" <me>; wait 6; input /ma "'..settings.t3..'" <me>; wait 6; input /ma "'..settings.t4..'" <me>; wait 6; input /ma "'..settings.t5..'" <me>')
 end
