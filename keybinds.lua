@@ -59,8 +59,8 @@ windower.register_event('addon command', function(command, ...)
    elseif cmd == 'rs' or cmd == 'removeset' then
       remove_set(args)
 
-   elseif cmd == 'dt' or cmd == 'defaulttrusts' then
-
+   elseif cmd == 'sds' or cmd == 'defaultset' then
+      set_default_set(args)
 
    elseif cmd == 'st' or cmd == 'summontrusts' then
       summon_trusts(args)
@@ -89,6 +89,9 @@ function display_sets()
          log(name)
       end
    end
+
+   local set_name = settings.trusts.default_set:gsub('_', ' ')
+   log('Default set: '..set_name)
 end
 
 function save_set(set_name)
@@ -99,7 +102,7 @@ function save_set(set_name)
       return
    end
 
-   local saved_name = set_name:gsub('%s', '_')
+   local saved_name = set_name:gsub(' ', '_')
    settings.trusts.sets[saved_name] = {}
    
    for i=1, 5 do
@@ -116,7 +119,7 @@ function save_set(set_name)
 end
 
 function remove_set(set_name)
-   local saved_name = set_name:gsub('%s', '_')
+   local saved_name = set_name:gsub(' ', '_')
 
    if settings.trusts.sets[saved_name] then
       settings.trusts.sets = delete_element(settings.trusts.sets, saved_name)
@@ -124,6 +127,30 @@ function remove_set(set_name)
       log("Set "..set_name.." has been removed.")
    else
       log("That set doesn't exist.")
+   end
+end
+
+function set_default_set(set_name)
+   if set_name == '' then
+      log('You must enter a set name.')
+      return
+   end
+
+   local saved_name = set_name:gsub(' ', '_')
+   local set_matched = false
+
+   for k,_ in pairs(settings.trusts.sets) do
+      if saved_name == k then
+         settings.trusts.default_set = k
+         set_matched = true
+      end
+   end
+
+   if set_matched then
+      settings:save('all')
+      log(set_name..' is now the default set.')
+   else
+      log('The set you entered does not match any saved sets.')
    end
 end
 
