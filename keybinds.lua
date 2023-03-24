@@ -21,12 +21,6 @@ local defaults = {
    trusts = {}
 }
 
-defaults.trusts[1] = 'None'
-defaults.trusts[2] = 'None'
-defaults.trusts[3] = 'None'
-defaults.trusts[4] = 'None'
-defaults.trusts[5] = 'None'
-
 settings = config.load(defaults)
 settings:save()
 
@@ -47,11 +41,8 @@ windower.register_event('addon command', function(command, ...)
    elseif cmd == 'st' or cmd == 'showtrust' then
       show_trusts()
 
-   elseif cmd == 'at' or cmd == 'addtrust' then
-      local slot = args[3] or nil
-      local name = string.gsub(string.lower(table.concat(args, ' ')), "%s%d", "")
-      -- log(name, slot)
-      add_trust(name, slot)
+   elseif cmd == 'ss' or cmd == 'saveset' then
+      save_set(table.concat(args, " "))
       
    elseif cmd == 'rt' or cmd == 'replacetrust' then
       log(slot)
@@ -95,21 +86,22 @@ function show_trusts()
    end
 end
 
-function add_trust(name, slot)
-   slot = tonumber(slot)
-
-   if not name then
-      log('Correct syntax is //kb addtrust "<name of trust>" <slot number>\nExample: //kb addtrust "Tenzen" 1')
-      return
-   elseif slot <1 or slot > 5 then
-      log('Enter a valid slot number (1-5)')
-      return
-   end
+function save_set(set_name)
+   local party = windower.ffxi.get_party()
+   settings.trusts[set_name] = {}
    
-   settings.trusts[slot] = name
-   settings:save()
+   for i=1, 5 do
+      if party['p'..i] then
+         if party['p'..i].mob.is_npc then
+            settings.trusts[set_name][i] = trusts:with('models', party['p'..i].mob.models[1]).english
+            log(trusts:with('models', party['p'..i].mob.models[1]).english)
+         end
+      end
+   end
 
-   show_trusts()
+   settings:save('all')
+   log('Trust set "'..set_name..'" saved.')
+
 end
 
 function remove_trust(slot)
