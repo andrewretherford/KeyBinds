@@ -53,10 +53,7 @@ windower.register_event('addon command', function(command, ...)
       remove_trust(unpack(args))
 
    elseif cmd == 'trusts' then
-      log(summoning)
-      if not summoning then
-         summon_trusts()
-      end
+      summon_trusts()
 
    elseif cmd == 'warp' then
       warp()
@@ -126,15 +123,13 @@ end
 function summon_trusts()
    local trust_list = ''
 
-   for key,trust in ipairs(settings) do
-      if trust ~= 'None' then
-         trust_list = trust_list..'input /ma "'..trust..'" <me>; wait 6;'
+   for i=1,5 do
+      if settings.trusts[i] ~= 'None' then
+         trust_list = trust_list..'input /ma "'..settings.trusts[i]..'" <me>; wait 6;'
       end
    end
-   log(trust_list)
-   -- windower.send_command(trust_list)
-   -- windower.send_command(
-   --    'input /ma "'..settings.t1..'" <me>; wait 6; input /ma "'..settings.t2..'" <me>; wait 6; input /ma "'..settings.t3..'" <me>; wait 6; input /ma "'..settings.t4..'" <me>; wait 6; input /ma "'..settings.t5..'" <me>')
+
+   windower.send_command(trust_list)
 end
 
 -- Warp Function
