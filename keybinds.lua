@@ -12,14 +12,27 @@ _addon.language = 'english'
 require('logger')
 require('tables')
 require('strings')
+config = require('config')
 
-multibox = true
+
+local defaults = {
+   multibox = true,
+   weaponskill = {}
+}
+
+settings = config.load(defaults)
+settings:save('all')
+
 ----------------------------------
 -- Keybinds
 ----------------------------------
 
 windower.register_event('load', function()
-   multibox_binds()
+   if multibox then
+      multibox_binds()
+   else
+      solo_binds()
+   end
 end)
 
 ----------------------------------
@@ -28,19 +41,22 @@ end)
 
 windower.register_event('addon command', function(command, ...)
    local args = table.concat({...}, " ")
-   local cmd = command and command:lower()
+   command = command and command:lower()
 
-   if cmd == 'mount' then
+   if command == 'mount' then
       mount()
 
-   elseif cmd == 'warp' then
+   elseif command == 'warp' then
       warp()
 
-   elseif cmd == 'mb' or cmd == 'multibox' then
+   elseif command == 'mb' or command == 'multibox' then
       toggle_multibox(args)
 
-   elseif cmd == 'attack' then
+   elseif command == 'attack' then
       attack_target()
+
+   elseif command == 'sws' or command == 'setws' then
+      set_weaponskill({...})
    end
 
 end)
@@ -106,6 +122,15 @@ end
 
 function attack_target()
    windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack")
+end
+
+function set_weaponskill(args)
+   local name = args[1]
+   local skill = (table.concat(args, ' ')):gsub(name..' ', '')
+
+   settings.weaponskill[name] = skill
+   settings:save('all')
+   log(skill..' has been saved for '..name)
 end
 
 function multibox_binds()
