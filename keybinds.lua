@@ -19,11 +19,7 @@ multibox = true
 ----------------------------------
 
 windower.register_event('load', function()
-   windower.send_command("bind ~numpad7 send @all kb mount")
-   windower.send_command("bind ~numpad9 tm summontrusts")
-   windower.send_command("bind ~numpad3 kb warp")
-   windower.send_command("bind delete send skookum /ma 'cure' picklepants")
-   windower.send_command("bind home send skookum /attack <t>")
+   multibox_binds()
 end)
 
 ----------------------------------
@@ -42,6 +38,9 @@ windower.register_event('addon command', function(command, ...)
 
    elseif cmd == 'mb' or cmd == 'multibox' then
       toggle_multibox(args)
+
+   elseif cmd == 'attack' then
+      attack_target()
    end
 
 end)
@@ -69,23 +68,11 @@ function toggle_multibox(toggle)
    end
 
    if multibox == true then
-      -- Keybinds for Multibox Mode
-      windower.send_command("bind ~numpad7 send @all kb mount")
-      windower.send_command("bind ~numpad3 send @all kb warp")
-      windower.send_command("bind delete send skookum /ma 'cure' picklepants")
-      windower.send_command("bind home send skookum /attack <t>")
+      multibox_binds()
    else
-      -- Keybinds for Solo Mode
-      windower.send_command("bind ~numpad7 kb mount")
-      windower.send_command("bind ~numpad3 kb warp")
-      windower.send_command("unbind delete")
-      windower.send_command("unbind home")
+      solo_binds()
    end
 end
-
-----------------------------------
--- Utility
-----------------------------------
 
 function warp()
    local equipment = windower.ffxi.get_items('equipment')
@@ -115,4 +102,25 @@ function mount()
    else   
       windower.send_command('input /mount raptor')
    end
+end
+
+function attack_target()
+   windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack")
+end
+
+function multibox_binds()
+   windower.send_command("bind ~numpad7 send @all kb mount")
+   windower.send_command("bind ~numpad9 tm summontrusts")
+   windower.send_command("bind ~numpad3 kb warp")
+   windower.send_command("bind delete send skookum /ma 'cure' picklepants")
+   windower.send_command("bind ~delete send skookum /ma 'cure' skookum")
+   windower.send_command("bind home send skookum /follow picklepants")
+   windower.send_command("bind ~home kb attack")
+end
+
+function solo_binds()
+   windower.send_command("bind ~numpad7 kb mount")
+   windower.send_command("bind ~numpad3 kb warp")
+   windower.send_command("unbind delete")
+   windower.send_command("unbind home")
 end
