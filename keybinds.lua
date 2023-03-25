@@ -18,9 +18,9 @@ require('strings')
 ----------------------------------
 
 windower.register_event('load', function()
-   windower.send_command('bind ~1 send @all //kb mount')
-   windower.send_command('bind ~2 tm summontrusts')
-   windower.send_command('bind ~3 kb warp')
+   windower.send_command('bind ~numpad7 send @all kb mount')
+   windower.send_command('bind ~numpad9 tm summontrusts')
+   windower.send_command('bind ~numpad3 kb warp')
 end)
 
 ----------------------------------
