@@ -25,6 +25,7 @@ settings:save('all')
 
 -- General Trackers
 attacking = false
+following = false
 
 ----------------------------------
 -- Keybinds
@@ -60,6 +61,9 @@ windower.register_event('addon command', function(command, ...)
 
    elseif command == 'attack' then
       attack_toggle()
+
+   elseif command == 'follow' then
+      follow_toggle()
    end
 
 end)
@@ -144,11 +148,21 @@ function attack_toggle()
    end
 end
 
+function follow_toggle()
+   if not following then
+      following = true
+      windower.send_command("send skookum /follow picklepants")
+   else
+      following = false
+      windower.send_command("send skookum setkey numpad7 down; wait 0.1; send skookum setkey numpad7 up")
+   end
+end
+
 function multibox_binds()
    windower.send_command("bind ~numpad7 send @all kb mount")
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad3 kb warp")
-   windower.send_command("bind home send skookum /follow picklepants")
+   windower.send_command("bind home kb follow")
    windower.send_command("bind ~home send skookum /ma protectra picklepants; wait 6; send skookum /ma shellra picklepants;")
    windower.send_command("bind pageup send skookum /ma 'blindna' picklepants")
    windower.send_command("bind ~pageup send skookum /ma 'paralyna' picklepants")
