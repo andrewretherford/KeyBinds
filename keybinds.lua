@@ -23,6 +23,9 @@ local defaults = {
 settings = config.load(defaults)
 settings:save('all')
 
+-- General Trackers
+attacking = false
+
 ----------------------------------
 -- Keybinds
 ----------------------------------
@@ -52,12 +55,11 @@ windower.register_event('addon command', function(command, ...)
    elseif command == 'mb' or command == 'multibox' then
       toggle_multibox(args)
 
-   elseif command == 'attack' then
-      attack_target()
-
    elseif command == 'sws' or command == 'setws' then
       set_weaponskill({...})
 
+   elseif command == 'attack' then
+      attack_toggle()
    end
 
 end)
@@ -123,10 +125,6 @@ function mount()
    end
 end
 
-function attack_target()
-   windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack")
-end
-
 function set_weaponskill(args)
    local name = args[1]
    local skill = (table.concat(args, ' ')):gsub(name..' ', '')
@@ -136,15 +134,29 @@ function set_weaponskill(args)
    log(skill..' has been saved for '..name)
 end
 
+function attack_toggle()
+   if not attacking then
+      attacking = true
+      windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack;")
+   else
+      attacking = false
+      windower.send_command("send picklepants /attack; send @others /attack; wait 1; send @others /follow picklepants;")
+   end
+end
+
 function multibox_binds()
    windower.send_command("bind ~numpad7 send @all kb mount")
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad3 kb warp")
+   windower.send_command("bind home send skookum /follow picklepants")
+   windower.send_command("bind ~home send skookum /ma protectra picklepants; wait 6; send skookum /ma shellra picklepants;")
+   windower.send_command("bind pageup send skookum /ma 'blindna' picklepants")
+   windower.send_command("bind ~pageup send skookum /ma 'paralyna' picklepants")
+   windower.send_command("bind ^pageup send skookum /ma 'poisona' picklepants")
    windower.send_command("bind delete send skookum /ma 'cure' picklepants")
    windower.send_command("bind ~delete send skookum /ma 'cure' skookum")
-   windower.send_command("bind ~insert send skookum /ws "..settings.weaponskill.skookum.." <t>")
-   windower.send_command("bind home send skookum /follow picklepants")
-   windower.send_command("bind ~home kb attack")
+   windower.send_command("bind ^numpad* send skookum /ws "..settings.weaponskill.skookum.." <t>")
+   windower.send_command("bind ~numpad* kb attack")
 end
 
 function solo_binds()
