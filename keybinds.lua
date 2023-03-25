@@ -28,7 +28,7 @@ settings:save('all')
 ----------------------------------
 
 windower.register_event('load', function()
-   if multibox then
+   if settings.multibox then
       multibox_binds()
    else
       solo_binds()
@@ -57,6 +57,7 @@ windower.register_event('addon command', function(command, ...)
 
    elseif command == 'sws' or command == 'setws' then
       set_weaponskill({...})
+
    end
 
 end)
@@ -82,14 +83,14 @@ function toggle_multibox(toggle)
    else
       log('You must enter either "on" or "off" ')
    end
+   
+   settings:save('all')
 
    if settings.multibox == true then
       multibox_binds()
    else
       solo_binds()
    end
-
-   settings:save('all')
 end
 
 function warp()
@@ -141,6 +142,7 @@ function multibox_binds()
    windower.send_command("bind ~numpad3 kb warp")
    windower.send_command("bind delete send skookum /ma 'cure' picklepants")
    windower.send_command("bind ~delete send skookum /ma 'cure' skookum")
+   windower.send_command("bind ~insert send skookum /ws "..settings.weaponskill.skookum.." <t>")
    windower.send_command("bind home send skookum /follow picklepants")
    windower.send_command("bind ~home kb attack")
 end
