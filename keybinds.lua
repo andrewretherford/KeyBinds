@@ -67,14 +67,14 @@ end)
 
 function toggle_multibox(toggle)
    if toggle == 'on' then
-      multibox = true
+      settings.multibox = true
       log('Multiboxing mode enabled')
    elseif toggle == 'off' then
-      multibox = false
+      settings.multibox = false
       log('Multiboxing mode disabled')
    elseif toggle == '' then
-      multibox = not multibox
-      if multibox == true then
+      settings.multibox = not settings.multibox
+      if settings.multibox == true then
          log('Multiboxing mode enabled')
       else
          log('Multiboxing mode disabled')
@@ -83,11 +83,13 @@ function toggle_multibox(toggle)
       log('You must enter either "on" or "off" ')
    end
 
-   if multibox == true then
+   if settings.multibox == true then
       multibox_binds()
    else
       solo_binds()
    end
+
+   settings:save('all')
 end
 
 function warp()
