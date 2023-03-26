@@ -3,7 +3,7 @@
     <global>
         <multibox>true</multibox>
         <weaponskill>
-            <skookum>shining strike</skookum>
+            <skookum>heavy swing</skookum>
         </weaponskill>
     </global>
 </settings>

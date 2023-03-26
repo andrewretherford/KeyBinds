@@ -139,13 +139,8 @@ function set_weaponskill(args)
 end
 
 function attack_toggle()
-   if not attacking then
       attacking = true
-      windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack;")
-   else
-      attacking = false
-      windower.send_command("send picklepants /attack; send @others /attack; wait 1; send @others /follow picklepants;")
-   end
+      windower.send_command("send picklepants /attack; wait 1; send @others /assist picklepants; wait 2; send @others /attack; wait 1; send @others /follow picklepants")
 end
 
 function follow_toggle()
@@ -161,16 +156,19 @@ end
 function multibox_binds()
    windower.send_command("bind ~numpad7 send @all kb mount")
    windower.send_command("bind ~numpad9 tm summontrusts")
-   windower.send_command("bind ~numpad3 kb warp")
+   windower.send_command("bind ~numpad3 send @all kb warp")
    windower.send_command("bind home kb follow")
-   windower.send_command("bind ~home send skookum /ma protectra picklepants; wait 6; send skookum /ma shellra picklepants;")
+   windower.send_command("bind ~home send skookum /ma protectra <me>; wait 4; send skookum /ma shellra <me>;")
    windower.send_command("bind pageup send skookum /ma 'blindna' picklepants")
    windower.send_command("bind ~pageup send skookum /ma 'paralyna' picklepants")
    windower.send_command("bind ^pageup send skookum /ma 'poisona' picklepants")
-   windower.send_command("bind delete send skookum /ma 'cure' picklepants")
-   windower.send_command("bind ~delete send skookum /ma 'cure' skookum")
-   windower.send_command("bind ^numpad* send skookum /ws "..settings.weaponskill.skookum.." <t>")
+   windower.send_command("bind delete send skookum /ma 'cure II' picklepants")
+   windower.send_command("bind ~delete send skookum /ma 'cure II' skookum")
+   windower.send_command("bind ^delete send skookum /ma 'curaga' skookum")
+   windower.send_command("bind end send skookum /ma 'dia' <t>")
+   windower.send_command("bind ^numpad* send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
    windower.send_command("bind ~numpad* kb attack")
+   windower.send_command("bind ^numpad/ send skookum /heal")
 end
 
 function solo_binds()
