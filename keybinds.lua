@@ -64,8 +64,12 @@ windower.register_event('addon command', function(command, ...)
 
    elseif command == 'follow' then
       follow_toggle()
+
    elseif command == 'heal' then
       heal({...})
+
+   elseif command == 'nuke' then
+      nuke({...})
    end
 
 end)
@@ -163,14 +167,18 @@ function heal(args)
       return
    end
 
-   local name = target.name
-
-   windower.send_command('send '..table.concat(args, ' ')..' '..name)
+   windower.send_command('send '..table.concat(args, ' ')..' '..target.name)
 end
 
--- function nuke(args)
---    local target = windower.ffxi.get_mob_by_target('t')
--- end
+function nuke(args)
+   local target = windower.ffxi.get_mob_by_target('t')
+   if not target then
+      log('No target - cancelling operation')
+      return
+   end
+
+   windower.send_command('send '..table.concat(args, ' ')..' '..target.name)
+end
 
 function multibox_binds()
    ------------------------------------
