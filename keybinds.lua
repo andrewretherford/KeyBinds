@@ -64,6 +64,8 @@ windower.register_event('addon command', function(command, ...)
 
    elseif command == 'follow' then
       follow_toggle()
+   elseif command == 'heal' then
+      heal({...})
    end
 
 end)
@@ -135,6 +137,7 @@ function set_weaponskill(args)
 
    settings.weaponskill[name] = skill
    settings:save('all')
+   if settings.multibox then multibox_binds() end
    log(skill..' has been saved for '..name)
 end
 
@@ -153,22 +156,76 @@ function follow_toggle()
    end
 end
 
+function heal(args)
+   local target = windower.ffxi.get_mob_by_target('lastst')
+   if not target then
+      log('No target - cancelling operation')
+      return
+   end
+
+   local name = target.name
+
+   windower.send_command('send '..table.concat(args, ' ')..' '..name)
+end
+
+-- function nuke(args)
+--    local target = windower.ffxi.get_mob_by_target('t')
+-- end
+
 function multibox_binds()
+   ------------------------------------
+   -- Numpad
+   ------------------------------------
    windower.send_command("bind ~numpad7 send @all kb mount")
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad3 send @all kb warp")
+
+   ------------------------------------
+   -- Insert Block
+   ------------------------------------
    windower.send_command("bind home kb follow")
-   windower.send_command("bind ~home send skookum /ma protectra <me>; wait 4; send skookum /ma shellra <me>;")
+   windower.send_command("bind ~home send skookum /ma protectra <me>; wait 4; send skookum /ma shellra <me>")
+   -- windower.send_command("bind ^home ")
+   -- windower.send_command("bind !home ")
    windower.send_command("bind pageup send skookum /ma 'blindna' picklepants")
    windower.send_command("bind ~pageup send skookum /ma 'paralyna' picklepants")
    windower.send_command("bind ^pageup send skookum /ma 'poisona' picklepants")
+   -- windower.send_command("bind !pageup ")
    windower.send_command("bind delete send skookum /ma 'cure II' picklepants")
    windower.send_command("bind ~delete send skookum /ma 'cure II' skookum")
    windower.send_command("bind ^delete send skookum /ma 'curaga' skookum")
+   -- windower.send_command("bind !delete ")
    windower.send_command("bind end send skookum /ma 'dia' <t>")
-   windower.send_command("bind ^numpad* send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
-   windower.send_command("bind ~numpad* kb attack")
-   windower.send_command("bind ^numpad/ send skookum /heal")
+   -- windower.send_command("bind ~end ")
+   -- windower.send_command("bind ^end ")
+   -- windower.send_command("bind !end ")
+   -- windower.send_command("bind pagedown ")
+   -- windower.send_command("bind ~pagedown ")
+   -- windower.send_command("bind ^pagedown ")
+   -- windower.send_command("bind !pagedown ")
+   
+   ------------------------------------
+   -- Thumbstick
+   ------------------------------------
+   -- Physical attack binds
+   -- windower.send_command("bind [ send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
+   -- windower.send_command("bind ] kb attack")
+
+   -- windower.send_command("bind [ ")
+   -- windower.send_command("bind ~[ ")
+   -- windower.send_command("bind ^[ ")
+   -- windower.send_command("bind ![ ")
+   -- windower.send_command("bind ] ")
+   -- windower.send_command("bind ~] ")
+   -- windower.send_command("bind ^] ")
+   -- windower.send_command("bind !] ")
+   -- windower.send_command("bind f11 ")
+   -- windower.send_command("bind ~f11 ")
+   -- windower.send_command("bind ^f11 ")
+   -- windower.send_command("bind !f11 ")
+   -- windower.send_command("bind ~f12 ")
+   -- windower.send_command("bind ^f12 ")
+   -- windower.send_command("bind !f12 ")
 end
 
 function solo_binds()
@@ -176,4 +233,5 @@ function solo_binds()
    windower.send_command("bind ~numpad3 kb warp")
    windower.send_command("unbind delete")
    windower.send_command("unbind home")
+   windower.send_command("unbind end")
 end
