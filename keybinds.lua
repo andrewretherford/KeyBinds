@@ -70,7 +70,6 @@ windower.register_event('addon command', function(command, ...)
       heal({...})
 
    elseif command == 'nuke' then
-      log('nuke hit')
       nuke({...})
       
    elseif command == 'decurse' then
@@ -205,15 +204,15 @@ function decurse()
    }
 
    local dispel = flase
-   for k,_ in pairs(dispel_priority) do
-      if buffs[k] then
-         dispel = k
+   for _,v in pairs(buffs) do
+      if dispel_priority[v] then
+         dispel = dispel_priority[v]
       end
    end
   
    if dispel then
-      windower.send_command("send skookum /p Casting "..dispel.." on "..target)
-      windower.send_command("send skookum /ma "..dispel.." "..target)
+      windower.send_command("send skookum /p Casting "..dispel.." on "..target.name)
+      windower.send_command("send skookum /ma "..dispel.." "..target.name)
       return
    end
 
