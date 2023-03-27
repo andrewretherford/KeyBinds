@@ -26,7 +26,6 @@ settings:save('all')
 
 -- General Trackers
 attacking = false
-following = false
 
 ----------------------------------
 -- Keybinds
@@ -156,12 +155,12 @@ function attack_toggle()
 end
 
 function follow_toggle()
+   local following = windower.ffxi.get_player().follow_index
+
    if not following then
-      following = true
-      windower.send_command("send skookum /follow picklepants")
+      windower.send_command("input /follow picklepants")
    else
-      following = false
-      windower.send_command("send skookum setkey numpad7 down; wait 0.1; send skookum setkey numpad7 up")
+      windower.send_command("setkey numpad7 down; wait 0.1; setkey numpad7 up")
    end
 end
 
@@ -230,7 +229,7 @@ function multibox_binds()
    ------------------------------------
    -- Insert Block
    ------------------------------------
-   windower.send_command("bind home kb follow")
+   windower.send_command("bind home send skookum kb follow")
    windower.send_command("bind ~home send skookum /ma protectra <me>; wait 4; send skookum /ma shellra <me>")
    -- windower.send_command("bind ^home ")
    -- windower.send_command("bind !home ")
@@ -242,7 +241,7 @@ function multibox_binds()
    windower.send_command("bind ~delete send skookum /ma 'cure II' skookum")
    windower.send_command("bind ^delete send skookum /ma 'curaga' skookum")
    -- windower.send_command("bind !delete ")
-   windower.send_command("bind end send skookum /ma 'dia' <t>")
+   -- windower.send_command("bind ~end kb nuke skookum dia")
    -- windower.send_command("bind ~end ")
    -- windower.send_command("bind ^end ")
    -- windower.send_command("bind !end ")
@@ -266,7 +265,7 @@ function multibox_binds()
    windower.send_command("bind ~] kb nuke skookum blizzard")
    windower.send_command("bind ^] kb nuke skookum thunder")
    -- windower.send_command("bind !] ")
-   -- windower.send_command("bind f11 ")
+   windower.send_command("bind f11 kb nuke skookum dia")
    -- windower.send_command("bind ~f11 ")
    -- windower.send_command("bind ^f11 ")
    windower.send_command("bind !f11 send skookum /ma protectra <me>; wait 3; send skookum /ma shellra <me>; wait 3; send skookum /ma aquaveil <me>; wait 10; send skookum /ma blink <me>")
