@@ -13,6 +13,7 @@ require('logger')
 require('tables')
 require('strings')
 config = require('config')
+res = require('resources')
 
 
 local defaults = {
@@ -69,7 +70,12 @@ windower.register_event('addon command', function(command, ...)
       heal({...})
 
    elseif command == 'nuke' then
+      log('nuke hit')
       nuke({...})
+      
+   elseif command == 'decurse' then
+      decurse()
+
    end
 
 end)
@@ -160,24 +166,58 @@ function follow_toggle()
    end
 end
 
-function heal(args)
-   local target = windower.ffxi.get_mob_by_target('lastst')
+function get_target(type)
+   local target = windower.ffxi.get_mob_by_target(type)
+
    if not target then
       log('No target - cancelling operation')
-      return
+      return false
    end
 
-   windower.send_command('send '..table.concat(args, ' ')..' '..target.name)
+   return target
+end
+
+function heal(args)
+   local target = get_target('lastst')
+   if not target then return end
+
+   windower.send_command("send "..table.concat(args, " ").." "..target.name)
 end
 
 function nuke(args)
-   local target = windower.ffxi.get_mob_by_target('t')
-   if not target then
-      log('No target - cancelling operation')
+   local target = get_target('t')
+   if not target then return end
+
+   windower.send_command("send skookum /p Casting "..args[2].." on "..target.name)
+   windower.send_command("send "..table.concat(args, " ").." "..target.id)
+end
+
+function decurse()
+   local buffs = T(windower.ffxi.get_player().buffs)
+   local target = get_target('lastst')
+   if not target then return end
+
+   local dispel_priority = T{
+      [4] = 'paralyna',
+      [5] = 'blindna',
+      [6] = 'silena',
+      [3] = 'poisona'
+   }
+
+   local dispel = flase
+   for k,_ in pairs(dispel_priority) do
+      if buffs[k] then
+         dispel = k
+      end
+   end
+  
+   if dispel then
+      windower.send_command("send skookum /p Casting "..dispel.." on "..target)
+      windower.send_command("send skookum /ma "..dispel.." "..target)
       return
    end
 
-   windower.send_command('send '..table.concat(args, ' ')..' '..target.name)
+   windower.send_command("send skookum /p Nothing to dispel")
 end
 
 function multibox_binds()
@@ -219,18 +259,19 @@ function multibox_binds()
    -- windower.send_command("bind [ send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
    -- windower.send_command("bind ] kb attack")
 
-   -- windower.send_command("bind [ ")
-   -- windower.send_command("bind ~[ ")
-   -- windower.send_command("bind ^[ ")
-   -- windower.send_command("bind ![ ")
-   -- windower.send_command("bind ] ")
-   -- windower.send_command("bind ~] ")
-   -- windower.send_command("bind ^] ")
+   windower.send_command("bind [ kb nuke skookum stone")
+   windower.send_command("bind ~[ kb nuke skookum water")
+   windower.send_command("bind ^[ kb nuke skookum aero")
+   -- windower.send_command("bind ![ kb nuke skookum ")
+   windower.send_command("bind ] kb nuke skookum fire")
+   windower.send_command("bind ~] kb nuke skookum blizzard")
+   windower.send_command("bind ^] kb nuke skookum thunder")
    -- windower.send_command("bind !] ")
    -- windower.send_command("bind f11 ")
    -- windower.send_command("bind ~f11 ")
    -- windower.send_command("bind ^f11 ")
-   -- windower.send_command("bind !f11 ")
+   windower.send_command("bind !f11 send skookum /ma protectra <me>; wait 3; send skookum /ma shellra <me>; wait 3; send skookum /ma aquaveil <me>; wait 10; send skookum /ma blink <me>")
+   windower.send_command("bind f12 kb nuke skookum burn; wait 3; kb nuke skookum dia; wait 3; kb nuke skookum blind; wait 3; kb nuke skookum bio; wait 3; kb nuke skookum poison")
    -- windower.send_command("bind ~f12 ")
    -- windower.send_command("bind ^f12 ")
    -- windower.send_command("bind !f12 ")
