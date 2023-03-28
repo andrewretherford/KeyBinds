@@ -12,6 +12,7 @@ _addon.language = 'english'
 require('logger')
 require('tables')
 require('strings')
+require('functions')
 config = require('config')
 res = require('resources')
 
@@ -52,6 +53,7 @@ end)
 windower.register_event('addon command', function(command, ...)
    command = command and command:lower()
    local argstring = table.concat({...}, ' '):lower()
+   -- log(argstring)
 
    if command == 'mb' or command == 'multibox' then
       toggle_multibox(argstring)
@@ -76,7 +78,7 @@ windower.register_event('addon command', function(command, ...)
 end)
 
 ----------------------------------------------------------------------------------------------------
--- Utility
+-- Core Functions
 ----------------------------------------------------------------------------------------------------
 
 function toggle_multibox(toggle)
@@ -98,37 +100,31 @@ function toggle_multibox(toggle)
    end
    
    settings:save('all')
-
-   if settings.multibox == true then
-      unbind_all()
-      multibox_binds()
-   else
-      unbind_all()
-      solo_binds()
-   end
+   load_binds()
 end
 
 function display_set(set_name)
    if set_name == '' then     -- Displays all set names if no name is given
+      log(#settings.key_sets['blm'])
       if #settings.key_sets < 1 then
          log('No saved sets')
       else
          log('Saved key sets:')
          for k,_ in pairs(settings.key_sets) do
-            log(display_set_format(k))
+            log(display_name_format(k))
          end
       end
 
       if settings.active_key_set ~= '' then
-         log(display_set_format(settings.active_key_set)..' is currently active')
+         log(display_name_format(settings.active_key_set)..' is currently active')
       else
          log('No sets are currently active')
       end
    else                       -- Displays all keybinds in the given set
-      if settings.key_sets[save_set_format(set_name)] then
+      if settings.key_sets[save_name_format(set_name)] then
          log(set_name)
-         for k,v in pairs(settings.key_sets[save_set_format(set_name)]) do
-            log(display_keybind_format(k), v)
+         for k,v in pairs(settings.key_sets[save_name_format(set_name)]) do
+            log(display_name_format(k), v)
          end
       else
          log(set_name..' did not match any saved sets')
@@ -142,7 +138,7 @@ function add_set(set_name)
       return
    end
 
-   settings.key_sets[save_set_format(set_name)] = {}
+   settings.key_sets[save_name_format(set_name)] = {}
    settings:save('all')
    log(set_name..' has been created')
 end
@@ -153,8 +149,8 @@ function remove_set(set_name)
       return
    end
 
-   if settings.key_sets[save_set_format(set_name)] then
-      table.delete(settings.key_sets, save_set_format(set_name))
+   if settings.key_sets:containskey(save_name_format(set_name)) then
+      settings.key_sets = remove(settings.key_sets, save_name_format(set_name))
       settings:save('all')
       log(set_name..' has been removed')
    else
@@ -163,14 +159,15 @@ function remove_set(set_name)
 end
 
 function set_active_set(set_name)
-   if not settings.key_sets[save_set_format(set_name)] then
+   if not settings.key_sets[save_name_format(set_name)] then
       log("That set does not exist yet, but you can create it with 'kb addset <set name>'")
       return
    end
 
-   settings.active_key_set = save_set_format(set_name)
+   settings.active_key_set = save_name_format(set_name)
    settings:save('all')
    log(set_name..' is now the active set')
+   load_binds()
 end
 
 function set_bind(args)
@@ -184,14 +181,15 @@ function set_bind(args)
       return
    end
 
-   args = T(args:map(string.lower))
+   args = T(args)
+   args = args:map(string.lower)
 
    local key, action = get_key_and_action(args)
-   log(key, action)
+   log('pre validation: '..key)
    if validate_key(key) then
-      settings.key_sets.active_key_set.binds[save_keybind_format(key)] = action
+      settings.key_sets[settings.active_key_set][save_name_format(key)] = action
       settings:save('all')
-      windower.send_command("unbind "..key.."; wait 0.5; bind "..key.." "..action)
+      windower.send_command("unbind "..save_name_format(key).."; wait 0.5; bind "..save_name_format(key).." "..action)
       log(key..' has been bound to '..action)
    else
       log('Key entered is invalid, please verify and try again')

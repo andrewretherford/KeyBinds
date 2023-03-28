@@ -1,24 +1,28 @@
+require('data')
+
 function get_key_and_action(args)
    if #args < 2 then return false end
 
-   args = T{args}
+   -- args = T{args}
    local key = ''
    local action = ''
 
    if table.find(modifiers, args[1]) then
+      log('modifier')
       key = args[1]..' '..args[2]
       action = table.concat(table.slice(args, 3, #args), ' ')
    else
+      log('no modifier')
       key = args[1]
       action = table.concat(table.slice(args, 2, #args), ' ')
    end
-
-   return key, args
+   -- log('inside get_key_and_action: '..key, action)
+   return key, action
 end
 
 function validate_key(key)
    if key == nil or key == '' then return false end
-
+   log('inside validate: '..key)
    key = key
       :gsub('~', '')
       :gsub('^', '')
@@ -30,16 +34,16 @@ function validate_key(key)
    return table.find(keybinds, key)
 end
 
-function display_keybind_format(key)
-   if not key or key == '' then return false end
+-- function display_keybind_format(key)
+--    if not key or key == '' then return false end
 
-   return key
-      :gsub('~', 'Shift ')
-      :gsub('^', 'Ctrl ')
-      :gsub('!', 'Alt ')
-end
+--    return key
+--       :gsub('~', 'Shift ')
+--       :gsub('^', 'Ctrl ')
+--       :gsub('!', 'Alt ')
+-- end
 
-function save_keybind_format(key)
+function send_keybind_format(key)
    if not key or key == '' then return false end
 
    if not string.startswith(key, '~') and not string.startswith(key, '^') and not string.startswith(key, '!') then
@@ -47,23 +51,53 @@ function save_keybind_format(key)
          :gsub('shift ', '~')
          :gsub('ctrl ', '^')
          :gsub('alt ', '!')
+         :gsub('shift_', '~')
+         :gsub('ctrl_', '^')
+         :gsub('alt_', '!')
    end
 end
 
-function display_set_format(saved_name)
+function display_name_format(saved_name)
    if saved_name == '' then return false end
 
    return saved_name:gsub('_', ' ')
 end
 
-function save_set_format(set_name)
+function save_name_format(set_name)
    if set_name == '' then return false end
 
-   return set_name:gsub(' ', '_')
+   local output = set_name
+      :gsub(' ', '_')
+      :gsub('~', 'shift_')
+      :gsub('%^', 'ctrl_')
+      :gsub('!', 'alt_')
+
+   return output
 end
 
 function unbind_all()
-   for _,v in pairs() do
+   for _,v in pairs(keybinds) do
       windower.send_command("unbind "..v)
    end
+end
+
+function load_binds()
+   if settings.multibox == true then
+      unbind_all()
+      multibox_binds()
+   else
+      unbind_all()
+      solo_binds()
+   end
+end
+
+function remove(table, key)
+   new_table = T{}
+   for k,v in pairs(table) do
+      if k ~= key then
+         new_table[k] = v
+      end
+   end
+
+   return new_table
 end
