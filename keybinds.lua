@@ -4,9 +4,9 @@ _addon.version = '0.0.0'
 _addon.commands = {'kb', 'keybinds'}
 _addon.language = 'english'
 
-----------------------------------
+----------------------------------------------------------------------------------------------------
 -- Imports and Globals
-----------------------------------
+----------------------------------------------------------------------------------------------------
 
 -- Windower Libraries
 require('logger')
@@ -15,21 +15,23 @@ require('strings')
 config = require('config')
 res = require('resources')
 
+-- Local Imports
+require('helper_functions')
+require('data')
 
+-- Default Settings
 local defaults = {
    multibox = true,
-   weaponskill = {}
+   active_key_set = '',
+   key_sets = T{},
 }
 
 settings = config.load(defaults)
 settings:save('all')
 
--- General Trackers
-attacking = false
-
-----------------------------------
+----------------------------------------------------------------------------------------------------
 -- Keybinds
-----------------------------------
+----------------------------------------------------------------------------------------------------
 
 windower.register_event('load', function()
    if settings.multibox then
@@ -39,23 +41,29 @@ windower.register_event('load', function()
    end
 end)
 
-----------------------------------
+----------------------------------------------------------------------------------------------------
 -- Command Switch
-----------------------------------
+----------------------------------------------------------------------------------------------------
 
 windower.register_event('addon command', function(command, ...)
    command = command and command:lower()
-   local args = table.concat({...}, " ")
+   -- local args = table.concat({...}, " ")
 
    if command == 'mb' or command == 'multibox' then
-      toggle_multibox(args)
+      toggle_multibox(table.concat({...}, " "))
+
+   elseif command == 'test' then
+      t = {'a', 'b', 'c'}
+      if table.find(t, 'b') then
+         log(table.find(t, 'b'))
+      end
    end
 
 end)
 
-----------------------------------
+----------------------------------------------------------------------------------------------------
 -- Utility
-----------------------------------
+----------------------------------------------------------------------------------------------------
 
 function toggle_multibox(toggle)
    if toggle == 'on' then
@@ -84,17 +92,84 @@ function toggle_multibox(toggle)
    end
 end
 
+function display_set(set_name)
+   if set_name == '' then     -- Displays all set names if no name is given
+      log('Saved key sets:')
+      for k,_ in pairs(settings.key_sets) do
+         log(k:gsub('_', ' '))
+      end
+      if settings.active_key_set ~= '' then
+         log(settings.active_key_set..' is currently active')
+      else
+         log('No sets are currently active')
+      end
+   else                       -- Displays all keybinds in the given set
+      log(set_name:gsub('_',' '))
+      for k,v in pairs(settings.key_sets[set_name:gsub(' ','_')]) do
+         log(k, v)
+      end
+   end
+end
+
+function add_set(set_name)
+   if set_name == '' then
+      log('Please enter a name for the new set')
+      return
+   end
+
+   settings.key_sets[set_name] = {}
+   settings:save('all')
+   log(set_name..' has been created')
+end
+
+function set_active_set(set_name)
+   if not settings.key_sets[set_name] then
+      log("That set does not exist yet, but you can create it with 'kb addset <set name>'")
+      return
+   end
+
+   settings.active_key_set = set_name:gsub(' ', '_')
+   settings:save('all')
+   log(set_name..' is now the active set')
+end
+
+function set_bind(args)
+   if settings.active_key_set == '' then
+      log("Please set an active key set with 'kb activeset <set name>' before binding keys")
+      return
+   end
+
+   args = T(args)
+   if #args < 2 then
+      log("Invalid entry, please use format 'kb <modifier> <key> <action>'")
+      return
+   end
+
+   local key = args[1] and args[1]:lower()
+   local action = table.concat(table.slice(args, 2, #args), " ")
+   log(key, action)
+   if validate_key(key) then
+      settings.key_sets.active_key_set.binds[key] = action
+      settings:save('all')
+      windower.send_command("unbind "..key.."; wait 0.5; bind "..key.." "..action)
+      log(key..' has been bound to '..action)
+   else
+      log('Key entered is invalid, please verify and try again')
+      return
+   end
+end
+
 function multibox_binds()
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    -- Numpad
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    windower.send_command("bind ~numpad7 send @all ub mount")
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad3 send @all ub warp")
 
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    -- Insert Block
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    windower.send_command("bind home send skookum ub follow")
    windower.send_command("bind ~home send skookum /heal")
    windower.send_command("bind ^home send skookum ub consumables")
@@ -116,9 +191,9 @@ function multibox_binds()
    -- windower.send_command("bind ^pagedown ")
    -- windower.send_command("bind !pagedown ")
    
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    -- Thumbstick
-   ------------------------------------
+   -------------------------------------------------------------------------------------------------
    -- Physical attack binds
    -- windower.send_command("bind [ send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
    -- windower.send_command("bind ] kb attack")
