@@ -7,21 +7,19 @@ function get_key_and_action(args)
    local action = ''
 
    if table.find(modifiers, args[1]) then
-      log('modifier')
       key = args[1]..' '..args[2]
       action = table.concat(table.slice(args, 3, #args), ' ')
    else
-      log('no modifier')
       key = args[1]
       action = table.concat(table.slice(args, 2, #args), ' ')
    end
-   -- log('inside get_key_and_action: '..key, action)
+
    return key, action
 end
 
 function validate_key(key)
    if key == nil or key == '' then return false end
-   log('inside validate: '..key)
+
    key = key
       :gsub('~', '')
       :gsub('^', '')
@@ -32,15 +30,6 @@ function validate_key(key)
 
    return table.find(keybinds, key)
 end
-
--- function display_keybind_format(key)
---    if not key or key == '' then return false end
-
---    return key
---       :gsub('~', 'Shift ')
---       :gsub('^', 'Ctrl ')
---       :gsub('!', 'Alt ')
--- end
 
 function send_keybind_format(key)
    if not key or key == '' then return false end
@@ -59,19 +48,20 @@ end
 function display_name_format(saved_name)
    if saved_name == '' then return false end
 
-   return saved_name:gsub('_', ' ')
+   saved_name = saved_name:gsub('_', ' ')
+   return saved_name
 end
 
 function save_name_format(set_name)
    if set_name == '' then return false end
 
-   local output = set_name
+   set_name = set_name
       :gsub(' ', '_')
       :gsub('~', 'shift_')
       :gsub('%^', 'ctrl_')
       :gsub('!', 'alt_')
 
-   return output
+   return set_name
 end
 
 function unbind_all()

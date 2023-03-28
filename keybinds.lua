@@ -57,13 +57,13 @@ windower.register_event('addon command', function(command, ...)
 
    if command == 'mb' or command == 'multibox' then
       toggle_multibox(argstring)
-   elseif command == 'ds' or command == 'disp' or command == 'displayset' then
+   elseif command == 'dis' or command == 'display' then
       display_set(argstring)
-   elseif command == 'ads' or command == 'addset' then
+   elseif command == 'add' or command == 'addset' then
       add_set(argstring)
-   elseif command == 'rs' or command == 'removeset' then
+   elseif command == 'rem' or command == 'removeset' then
       remove_set(argstring)
-   elseif command == 'sas' or command == 'setactive' then
+   elseif command == 'active' or command == 'setactive' then
       set_active_set(argstring)
    elseif command == 'bind' then
       bind({...})
@@ -122,8 +122,12 @@ function display_set(set_name)
    else                       -- Displays all keybinds in the given set
       if settings.key_sets:containskey(save_name_format(set_name)) then
          log(set_name)
-         for k,v in pairs(settings.key_sets[save_name_format(set_name)]) do
-            log(display_name_format(k), v)
+         if settings.key_sets[save_name_format(set_name)]:length() > 0 then
+            for k,v in pairs(settings.key_sets[save_name_format(set_name)]) do
+               log(display_name_format(k), v)
+            end
+         else
+            log('This set is empty')
          end
       else
          log(set_name..' did not match any saved sets')
@@ -184,11 +188,11 @@ function bind(args)
    args = args:map(string.lower)
 
    local key, action = get_key_and_action(args)
-   log('pre validation: '..key)
+
    if validate_key(key) then
       settings.key_sets[settings.active_key_set][save_name_format(key)] = action
       settings:save('all')
-      windower.send_command("unbind "..save_name_format(key).."; wait 0.5; bind "..save_name_format(key).." "..action)
+      windower.send_command("unbind "..send_keybind_format(key).."; wait 0.5; bind "..send_keybind_format(key).." "..action)
       log(key..' has been bound to '..action)
    else
       log('Key entered is invalid, please verify and try again')
