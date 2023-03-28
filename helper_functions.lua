@@ -46,3 +46,15 @@ function save_keybind_format(key)
          :gsub('alt ', '!')
    end
 end
+
+function display_set_format(saved_name)
+   if saved_name == '' then return false end
+
+   return saved_name:gsub('_', ' ')
+end
+
+function save_set_format(set_name)
+   if set_name == '' then return false end
+
+   return set_name:gsub(' ', '_')
+end
