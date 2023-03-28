@@ -23,6 +23,9 @@ function validate_key(key)
       :gsub('~', '')
       :gsub('^', '')
       :gsub('!', '')
+      :gsub('shift ', '')
+      :gsub('ctrl ', '')
+      :gsub('alt ', '')
 
    return table.find(keybinds, key)
 end
