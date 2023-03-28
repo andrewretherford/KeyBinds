@@ -66,7 +66,7 @@ windower.register_event('addon command', function(command, ...)
    elseif command == 'sas' or command == 'setactive' then
       set_active_set(argstring)
    elseif command == 'bind' then
-      set_bind({...})
+      bind({...})
    -- elseif command == 'test' then
    --    function test()
    --       return 'one', 'two'
@@ -105,8 +105,7 @@ end
 
 function display_set(set_name)
    if set_name == '' then     -- Displays all set names if no name is given
-      log(#settings.key_sets['blm'])
-      if #settings.key_sets < 1 then
+      if settings.key_sets:length() < 1 then
          log('No saved sets')
       else
          log('Saved key sets:')
@@ -121,7 +120,7 @@ function display_set(set_name)
          log('No sets are currently active')
       end
    else                       -- Displays all keybinds in the given set
-      if settings.key_sets[save_name_format(set_name)] then
+      if settings.key_sets:containskey(save_name_format(set_name)) then
          log(set_name)
          for k,v in pairs(settings.key_sets[save_name_format(set_name)]) do
             log(display_name_format(k), v)
@@ -170,7 +169,7 @@ function set_active_set(set_name)
    load_binds()
 end
 
-function set_bind(args)
+function bind(args)
    if settings.active_key_set == '' then          -- Check that a key set is active
       log("Please set an active key set with 'kb activeset <set name>' before binding keys")
       return
@@ -195,6 +194,10 @@ function set_bind(args)
       log('Key entered is invalid, please verify and try again')
       return
    end
+end
+
+function unbind(args)
+
 end
 
 function multibox_binds()

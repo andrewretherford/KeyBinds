@@ -3,7 +3,6 @@ require('data')
 function get_key_and_action(args)
    if #args < 2 then return false end
 
-   -- args = T{args}
    local key = ''
    local action = ''
 
