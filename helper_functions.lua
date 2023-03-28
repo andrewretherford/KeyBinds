@@ -61,3 +61,9 @@ function save_set_format(set_name)
 
    return set_name:gsub(' ', '_')
 end
+
+function unbind_all()
+   for _,v in pairs() do
+      windower.send_command("unbind "..v)
+   end
+end
