@@ -14,7 +14,8 @@ require('tables')
 require('strings')
 require('functions')
 config = require('config')
-res = require('resources')
+-- res = require('resources')
+files = require('files')
 
 -- Local Imports
 require('helper_functions')
@@ -66,8 +67,10 @@ windower.register_event('addon command', function(command, ...)
       set_active_set(argstring)
    elseif command == 'bind' or command == 'addbind' then
       add_bind({...})
-   elseif command == 'unbind' or command== 'removebind' then
+   elseif command == 'unbind' or command == 'removebind' then
       remove_bind(argstring)
+   elseif command == 'load' or command == 'loadset' then
+      load_file(argstring)
    elseif command == 'test' then
       log('test')
       test = {
@@ -75,10 +78,9 @@ windower.register_event('addon command', function(command, ...)
       }
       test.subtest['one'] = 1
 
-      store_val = "subtest['one']"
-      log(test)
-      log(test.subtest['one'])
-      log(test[store_val])
+      for k,v in pairs(test.subtest) do
+         log(type(v))
+      end
    end
 
 end)
@@ -144,19 +146,20 @@ end
 function add_set(set_name)
    if settings.key_sets[format_save_name(set_name)] then
       log('That set already exists')
-      return
+      return false
    elseif set_name == '' then
       log('Please enter a name for the new set')
-      return
+      return false
    elseif set_name:match('[^%w%s]') then
       log('Set names can only contain alphanumeric characters')
-      return
+      return false
    end
 
 
-   settings.key_sets[format_save_name(set_name)] = {}
+   settings.key_sets[format_save_name(set_name)] = T{}
    settings:save('all')
    log(set_name..' has been created')
+   return true
 end
 
 function remove_set(set_name)
@@ -189,12 +192,12 @@ end
 function add_bind(args)
    if settings.active_key_set == '' then          -- Check that a key set is active
       log("Please set an active key set with 'kb activeset <set name>' before binding keys")
-      return
+      return false
    end
 
    if #args < 2 then                              -- Check for minimum number of arguments
       log("Invalid entry, please use format 'kb bind [modifier] <key> <action>' with modifier being optional")
-      return
+      return false
    end
 
    args = T(args)
@@ -207,9 +210,10 @@ function add_bind(args)
       settings:save('all')
       windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
       log(format_display_name(key)..' has been bound to '..action)
+      return true
    else
       log('Key entered is invalid, please verify and try again')
-      return
+      return false
    end
 end
 
@@ -226,6 +230,26 @@ function remove_bind(key)
       log(key..' has been removed from '..format_display_name(settings.active_key_set))
    else
       log('Key entered does not exist in '..format_display_name(settings.active_key_set))
+   end
+end
+
+function load_file(file_name)
+
+   if files.exists("./kb_sets/"..file_name) then
+      new_set = files.readlines("./kb_sets/"..file_name)
+   end
+
+   file_name = file_name:gsub('%p%a+', '')
+
+   if add_set(file_name) then
+      set_active_set(file_name)
+      for _,v in pairs(new_set) do
+         if type(v) == 'string' then
+            if not add_bind(v:split(' ')) then
+               log('Failed to bind: '..v)
+            end
+         end
+      end
    end
 end
 
