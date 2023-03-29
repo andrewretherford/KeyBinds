@@ -67,22 +67,6 @@ function format_save_name(set_name)
    return set_name
 end
 
-function unbind_all()
-   for _,v in pairs(keybinds) do
-      windower.send_command("unbind "..v)
-   end
-end
-
-function load_binds()
-   if settings.multibox == true then
-      unbind_all()
-      multibox_binds()
-   else
-      unbind_all()
-      solo_binds()
-   end
-end
-
 function remove(table, key)
    new_table = T{}
    for k,v in pairs(table) do
@@ -92,4 +76,43 @@ function remove(table, key)
    end
 
    return new_table
+end
+
+function unbind_all()
+   for _,v in pairs(keybinds) do
+      windower.send_command("unbind "..v)
+   end
+end
+
+function load_binds()
+   if settings.multibox == true then
+      unbind_all()
+      load_multibox_binds()
+   else
+      unbind_all()
+      load_solo_binds()
+   end
+   load_set_binds()
+end
+
+function load_multibox_binds()
+   windower.send_command("bind ~numpad9 tm summontrusts")
+   windower.send_command("bind ~numpad7 send @all ub mount")
+   windower.send_command("bind ~numpad3 send @all ub warp")   
+end
+
+function load_solo_binds()
+   windower.send_command("bind ~numpad9 tm summontrusts")
+   windower.send_command("bind ~numpad7 ub mount")
+   windower.send_command("bind ~numpad3 ub warp")
+end
+
+function load_set_binds()
+   if settings.active_key_set == '' then return end
+
+   if settings.key_sets[settings.active_key_set] then
+      for k,v in pairs(settings.key_sets[settings.active_key_set]) do
+         windower.send_command("bind "..k..' '..v)
+      end
+   end
 end
