@@ -59,20 +59,27 @@ windower.register_event('addon command', function(command, ...)
       toggle_multibox(argstring)
    elseif command == 'dis' or command == 'display' then
       display_set(argstring)
-   elseif command == 'add' or command == 'addset' then
+   elseif command == 'addset' then
       add_set(argstring)
-   elseif command == 'rem' or command == 'removeset' then
+   elseif command == 'remset' or command == 'removeset' then
       remove_set(argstring)
    elseif command == 'active' or command == 'setactive' then
       set_active_set(argstring)
-   elseif command == 'bind' then
-      bind({...})
-   -- elseif command == 'test' then
-   --    function test()
-   --       return 'one', 'two'
-   --    end
-   --    local a,b = test()
-   --    log(a,b)
+   elseif command == 'bind' or command == 'addbind' then
+      add_bind({...})
+   elseif command == 'unbind' or command== 'removebind' then
+      remove_bind(argstring)
+   elseif command == 'test' then
+      log('test')
+      test = {
+         subtest = {}
+      }
+      test.subtest['one'] = 1
+
+      store_val = "subtest['one']"
+      log(test)
+      log(test.subtest['one'])
+      log(test[store_val])
    end
 
 end)
@@ -110,21 +117,21 @@ function display_set(set_name)
       else
          log('Saved key sets:')
          for k,_ in pairs(settings.key_sets) do
-            log(display_name_format(k))
+            log(format_display_name(k))
          end
       end
 
       if settings.active_key_set ~= '' then
-         log(display_name_format(settings.active_key_set)..' is currently active')
+         log(format_display_name(settings.active_key_set)..' is currently active')
       else
          log('No sets are currently active')
       end
    else                       -- Displays all keybinds in the given set
-      if settings.key_sets:containskey(save_name_format(set_name)) then
+      if settings.key_sets:containskey(format_save_name(set_name)) then
          log(set_name)
-         if settings.key_sets[save_name_format(set_name)]:length() > 0 then
-            for k,v in pairs(settings.key_sets[save_name_format(set_name)]) do
-               log(display_name_format(k), v)
+         if settings.key_sets[format_save_name(set_name)]:length() > 0 then
+            for k,v in pairs(settings.key_sets[format_save_name(set_name)]) do
+               log(format_display_name(k), v)
             end
          else
             log('This set is empty')
@@ -141,7 +148,7 @@ function add_set(set_name)
       return
    end
 
-   settings.key_sets[save_name_format(set_name)] = {}
+   settings.key_sets[format_save_name(set_name)] = {}
    settings:save('all')
    log(set_name..' has been created')
 end
@@ -152,8 +159,8 @@ function remove_set(set_name)
       return
    end
 
-   if settings.key_sets:containskey(save_name_format(set_name)) then
-      settings.key_sets = remove(settings.key_sets, save_name_format(set_name))
+   if settings.key_sets:containskey(format_save_name(set_name)) then
+      settings.key_sets = remove(settings.key_sets, format_save_name(set_name))
       settings:save('all')
       log(set_name..' has been removed')
    else
@@ -162,25 +169,25 @@ function remove_set(set_name)
 end
 
 function set_active_set(set_name)
-   if not settings.key_sets[save_name_format(set_name)] then
+   if not settings.key_sets[format_save_name(set_name)] then
       log("That set does not exist yet, but you can create it with 'kb addset <set name>'")
       return
    end
 
-   settings.active_key_set = save_name_format(set_name)
+   settings.active_key_set = format_save_name(set_name)
    settings:save('all')
    log(set_name..' is now the active set')
    load_binds()
 end
 
-function bind(args)
+function add_bind(args)
    if settings.active_key_set == '' then          -- Check that a key set is active
       log("Please set an active key set with 'kb activeset <set name>' before binding keys")
       return
    end
 
    if #args < 2 then                              -- Check for minimum number of arguments
-      log("Invalid entry, please use format 'kb [modifier] <key> <action>' with modifier being optional")
+      log("Invalid entry, please use format 'kb bind [modifier] <key> <action>' with modifier being optional")
       return
    end
 
@@ -190,9 +197,9 @@ function bind(args)
    local key, action = get_key_and_action(args)
 
    if validate_key(key) then
-      settings.key_sets[settings.active_key_set][save_name_format(key)] = action
+      settings.key_sets[settings.active_key_set][format_save_name(key)] = action
       settings:save('all')
-      windower.send_command("unbind "..send_keybind_format(key).."; wait 0.5; bind "..send_keybind_format(key).." "..action)
+      windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
       log(key..' has been bound to '..action)
    else
       log('Key entered is invalid, please verify and try again')
@@ -200,8 +207,20 @@ function bind(args)
    end
 end
 
-function unbind(args)
+function remove_bind(key)
+   if not key or key == '' then
+      log("Invalid entry, please use format 'kb unbind [modifier] <key>' with modifier being optional")
+      return
+   end
 
+   if settings.key_sets[settings.active_key_set]:containskey(format_save_name(key)) then
+      settings.key_sets[settings.active_key_set] = remove(settings.key_sets[settings.active_key_set], format_save_name(key))
+      settings:save('all')
+      windower.send_command("unbind "..format_send_keybind(key))
+      log(key..' has been removed from '..format_display_name(settings.active_key_set))
+   else
+      log('Key entered does not exist in '..format_display_name(settings.active_key_set))
+   end
 end
 
 function multibox_binds()

@@ -22,7 +22,7 @@ function validate_key(key)
 
    key = key
       :gsub('~', '')
-      :gsub('^', '')
+      :gsub('%^', '')
       :gsub('!', '')
       :gsub('shift ', '')
       :gsub('ctrl ', '')
@@ -31,7 +31,7 @@ function validate_key(key)
    return table.find(keybinds, key)
 end
 
-function send_keybind_format(key)
+function format_send_keybind(key)
    if not key or key == '' then return false end
 
    if not string.startswith(key, '~') and not string.startswith(key, '^') and not string.startswith(key, '!') then
@@ -45,14 +45,14 @@ function send_keybind_format(key)
    end
 end
 
-function display_name_format(saved_name)
+function format_display_name(saved_name)
    if saved_name == '' then return false end
 
    saved_name = saved_name:gsub('_', ' ')
    return saved_name
 end
 
-function save_name_format(set_name)
+function format_save_name(set_name)
    if set_name == '' then return false end
 
    set_name = set_name
