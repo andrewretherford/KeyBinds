@@ -34,21 +34,24 @@ end
 function format_send_keybind(key)
    if not key or key == '' then return false end
 
-   if not string.startswith(key, '~') and not string.startswith(key, '^') and not string.startswith(key, '!') then
-      return key
-         :gsub('shift ', '~')
-         :gsub('ctrl ', '^')
-         :gsub('alt ', '!')
-         :gsub('shift_', '~')
-         :gsub('ctrl_', '^')
-         :gsub('alt_', '!')
-   end
+   return key
+      :gsub('shift ', '~')
+      :gsub('ctrl ', '^')
+      :gsub('alt ', '!')
+      :gsub('shift_', '~')
+      :gsub('ctrl_', '^')
+      :gsub('alt_', '!')
 end
 
 function format_display_name(saved_name)
    if saved_name == '' then return false end
 
-   saved_name = saved_name:gsub('_', ' ')
+   saved_name = saved_name
+      :gsub('_', ' ')
+      :gsub('~', 'shift ')
+      :gsub('%^', 'ctrl ')
+      :gsub('!', 'alt ')
+
    return saved_name
 end
 

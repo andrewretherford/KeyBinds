@@ -53,7 +53,6 @@ end)
 windower.register_event('addon command', function(command, ...)
    command = command and command:lower()
    local argstring = table.concat({...}, ' '):lower()
-   -- log(argstring)
 
    if command == 'mb' or command == 'multibox' then
       toggle_multibox(argstring)
@@ -143,15 +142,17 @@ function display_set(set_name)
 end
 
 function add_set(set_name)
-   if set_name == '' then
+   if settings.key_sets[format_save_name(set_name)] then
+      log('That set already exists')
+      return
+   elseif set_name == '' then
       log('Please enter a name for the new set')
       return
-   end
-
-   if set_name:match('[^%w%s]') then
+   elseif set_name:match('[^%w%s]') then
       log('Set names can only contain alphanumeric characters')
       return
    end
+
 
    settings.key_sets[format_save_name(set_name)] = {}
    settings:save('all')
@@ -205,7 +206,7 @@ function add_bind(args)
       settings.key_sets[settings.active_key_set][format_save_name(key)] = action
       settings:save('all')
       windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
-      log(key..' has been bound to '..action)
+      log(format_display_name(key)..' has been bound to '..action)
    else
       log('Key entered is invalid, please verify and try again')
       return
@@ -229,6 +230,12 @@ function remove_bind(key)
 end
 
 function multibox_binds()
+   -- Universal Binds
+   windower.send_command("bind ~numpad9 tm summontrusts")
+   windower.send_command("bind ~numpad7 send @all ub mount")
+   windower.send_command("bind ~numpad3 send @all ub warp")
+
+   -- Set Specific Binds
    if settings.active_key_set == '' then return end
 
    if settings.key_sets[settings.active_key_set] then
@@ -237,23 +244,17 @@ function multibox_binds()
       end
    end
 
-   -------------------------------------------------------------------------------------------------
-   -- Numpad
-   -------------------------------------------------------------------------------------------------
-   -- windower.send_command("bind ~numpad7 send @all ub mount")
-   -- windower.send_command("bind ~numpad9 tm summontrusts")
-   -- windower.send_command("bind ~numpad3 send @all ub warp")
 
-   -- -------------------------------------------------------------------------------------------------
-   -- -- Insert Block
-   -- -------------------------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------------
+   -- Insert Block
+   -----------------------------------------------------------------------------------
    -- windower.send_command("bind home send skookum ub follow")
    -- windower.send_command("bind ~home send skookum /heal")
    -- windower.send_command("bind ^home send skookum ub consumables")
    -- -- windower.send_command("bind !home ")
    -- windower.send_command("bind pageup send skookum /ja 'elemental seal' <me>")
    -- windower.send_command("bind ~pageup send skookum /ja 'divine seal' <me>")
-   -- windower.send_command("bind ^pageup ")
+   -- -- windower.send_command("bind ^pageup ")
    -- -- windower.send_command("bind !pageup ")
    -- windower.send_command("bind delete send skookum /ma curaga <me>")
    -- windower.send_command("bind ~delete ")
@@ -268,9 +269,9 @@ function multibox_binds()
    -- -- windower.send_command("bind ^pagedown ")
    -- -- windower.send_command("bind !pagedown ")
    
-   -- -------------------------------------------------------------------------------------------------
+   -- -----------------------------------------------------------------------------------
    -- -- Thumbstick
-   -- -------------------------------------------------------------------------------------------------
+   -- -----------------------------------------------------------------------------------
    -- -- Physical attack binds
    -- -- windower.send_command("bind [ send skookum /ws "..settings.weaponskill.skookum.." <t>; send skookum /p Using "..settings.weaponskill.skookum.."!")
    -- -- windower.send_command("bind ] kb attack")
@@ -294,9 +295,7 @@ function multibox_binds()
 end
 
 function solo_binds()
+   windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad7 ub mount")
    windower.send_command("bind ~numpad3 ub warp")
-   -- windower.send_command("unbind delete")
-   -- windower.send_command("unbind home")
-   -- windower.send_command("unbind end")
 end
