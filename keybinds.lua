@@ -148,6 +148,11 @@ function add_set(set_name)
       return
    end
 
+   if set_name:match('[^%w%s]') then
+      log('Set names can only contain alphanumeric characters')
+      return
+   end
+
    settings.key_sets[format_save_name(set_name)] = {}
    settings:save('all')
    log(set_name..' has been created')
