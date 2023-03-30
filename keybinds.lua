@@ -23,9 +23,11 @@ require('data')
 
 -- Default Settings
 local defaults = {
-   multibox = true,
+   key_color = 158,
+   action_color = 166,
    active_key_set = '',
    key_sets = T{},
+   multibox = true,
 }
 
 settings = config.load(defaults)
@@ -37,9 +39,9 @@ settings:save('all')
 
 windower.register_event('load', function()
    if settings.multibox then
-      multibox_binds()
+      load_multibox_binds()
    else
-      solo_binds()
+      load_solo_binds()
    end
 end)
 
@@ -72,15 +74,7 @@ windower.register_event('addon command', function(command, ...)
    elseif command == 'load' or command == 'loadset' then
       load_file(argstring)
    elseif command == 'test' then
-      log('test')
-      test = {
-         subtest = {}
-      }
-      test.subtest['one'] = 1
-
-      for k,v in pairs(test.subtest) do
-         log(type(v))
-      end
+      
    end
 
 end)
@@ -125,14 +119,15 @@ function display_set(set_name)
       if settings.active_key_set ~= '' then
          log(format_display_name(settings.active_key_set)..' is currently active')
       else
-         log('No sets are currently active')
+         log('No set is currently active')
       end
    else                       -- Displays all keybinds in the given set
       if settings.key_sets:containskey(format_save_name(set_name)) then
          log(set_name)
          if settings.key_sets[format_save_name(set_name)]:length() > 0 then
             for k,v in pairs(settings.key_sets[format_save_name(set_name)]) do
-               log(format_display_name(k), v)
+               windower.add_to_chat(settings.key_color, format_display_name(k))
+               windower.add_to_chat(settings.action_color, v)
             end
          else
             log('This set is empty')
@@ -168,8 +163,11 @@ function remove_set(set_name)
       return
    end
 
-   if settings.key_sets:containskey(format_save_name(set_name)) then
+   if settings.key_sets:containskey(format_save_name(set_name)) then -- Removes set if it exists
       settings.key_sets = remove(settings.key_sets, format_save_name(set_name))
+      if settings.active_key_set == format_save_name(set_name) then -- Clears active set if removed
+         settings.active_key_set = ''
+      end
       settings:save('all')
       log(set_name..' has been removed')
    else
@@ -209,7 +207,8 @@ function add_bind(args)
       settings.key_sets[settings.active_key_set][format_save_name(key)] = action
       settings:save('all')
       windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
-      log(format_display_name(key)..' has been bound to '..action)
+      windower.add_to_chat(settings.key_color, format_display_name(key))
+      windower.add_to_chat(settings.action_color, action)
       return true
    else
       log('Key entered is invalid, please verify and try again')
@@ -234,17 +233,20 @@ function remove_bind(key)
 end
 
 function load_file(file_name)
-
    if files.exists("./kb_sets/"..file_name) then
       new_set = files.readlines("./kb_sets/"..file_name)
+   else
+      log('File does not exist')
+      return
    end
 
    file_name = file_name:gsub('%p%a+', '')
 
    if add_set(file_name) then
       set_active_set(file_name)
+      unbind_all()
       for _,v in pairs(new_set) do
-         if type(v) == 'string' then
+         if type(v) == 'string' and v ~= '' then
             if not add_bind(v:split(' ')) then
                log('Failed to bind: '..v)
             end
