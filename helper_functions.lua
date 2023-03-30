@@ -41,6 +41,9 @@ function format_send_keybind(key)
       :gsub('shift_', '~')
       :gsub('ctrl_', '^')
       :gsub('alt_', '!')
+      :gsub('left_bracket_', '[')
+      :gsub('right_bracket_', ']')
+      :gsub('_star', '*')
 end
 
 function format_display_name(saved_name)
@@ -51,6 +54,7 @@ function format_display_name(saved_name)
       :gsub('~', 'shift ')
       :gsub('%^', 'ctrl ')
       :gsub('!', 'alt ')
+      :gsub('%*', '_star')
 
    return saved_name
 end
@@ -63,6 +67,9 @@ function format_save_name(set_name)
       :gsub('~', 'shift_')
       :gsub('%^', 'ctrl_')
       :gsub('!', 'alt_')
+      :gsub('%[', 'left_bracket_')
+      :gsub('%]', 'right_bracket_')
+      :gsub('%*', '_star')
 
    return set_name
 end
@@ -112,7 +119,7 @@ function load_set_binds()
 
    if settings.key_sets[settings.active_key_set] then
       for k,v in pairs(settings.key_sets[settings.active_key_set]) do
-         windower.send_command("bind "..k..' '..v)
+         windower.send_command("bind "..format_send_keybind(k)..' '..v)
       end
    end
 end
