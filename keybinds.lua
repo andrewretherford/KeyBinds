@@ -14,7 +14,6 @@ require('tables')
 require('strings')
 require('functions')
 config = require('config')
--- res = require('resources')
 files = require('files')
 
 -- Local Imports
@@ -63,7 +62,7 @@ windower.register_event('addon command', function(command, ...)
       display_set(argstring)
    elseif command == 'addset' then
       add_set(argstring)
-   elseif command == 'remset' or command == 'removeset' then
+   elseif command == 'rmset' or command == 'removeset' then
       remove_set(argstring)
    elseif command == 'active' or command == 'setactive' then
       set_active_set(argstring)
@@ -74,7 +73,8 @@ windower.register_event('addon command', function(command, ...)
    elseif command == 'load' or command == 'loadset' then
       load_file(argstring)
    elseif command == 'test' then
-      
+      lastst = windower.ffxi.get_mob_by_target('lastst')
+      log(lastst.id)
    end
 
 end)

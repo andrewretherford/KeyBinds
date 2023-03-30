@@ -44,6 +44,7 @@ function format_send_keybind(key)
       :gsub('left_bracket_', '[')
       :gsub('right_bracket_', ']')
       :gsub('_star', '*')
+      :gsub('_forward_slash', '/')
 end
 
 function format_display_name(saved_name)
@@ -55,6 +56,7 @@ function format_display_name(saved_name)
       :gsub('%^', 'ctrl ')
       :gsub('!', 'alt ')
       :gsub('%*', '_star')
+      :gsub('/', '_forward_slash')
 
    return saved_name
 end
@@ -70,6 +72,7 @@ function format_save_name(set_name)
       :gsub('%[', 'left_bracket_')
       :gsub('%]', 'right_bracket_')
       :gsub('%*', '_star')
+      :gsub('/', '_forward_slash')
 
    return set_name
 end
