@@ -51,12 +51,14 @@ function format_display_name(saved_name)
    if saved_name == '' then return false end
 
    saved_name = saved_name
-      :gsub('_', ' ')
       :gsub('~', 'shift ')
       :gsub('%^', 'ctrl ')
       :gsub('!', 'alt ')
-      :gsub('%*', '_star')
-      :gsub('/', '_forward_slash')
+      :gsub('%[', 'left bracket')
+      :gsub('%]', 'right bracket')
+      :gsub('%*', ' star')
+      :gsub('/', ' forward slash')
+      :gsub('_', ' ')
 
    return saved_name
 end
@@ -65,14 +67,14 @@ function format_save_name(set_name)
    if set_name == '' then return false end
 
    set_name = set_name
-      :gsub(' ', '_')
       :gsub('~', 'shift_')
       :gsub('%^', 'ctrl_')
       :gsub('!', 'alt_')
-      :gsub('%[', 'left_bracket_')
-      :gsub('%]', 'right_bracket_')
+      :gsub('%[', 'left_bracket')
+      :gsub('%]', 'right_bracket')
       :gsub('%*', '_star')
-      :gsub('/', '_forward_slash')
+      :gsub('/', 'forward_slash')
+      :gsub(' ', '_')
 
    return set_name
 end
@@ -98,11 +100,11 @@ function load_binds()
    if settings.multibox == true then
       unbind_all()
       load_multibox_binds()
+      load_set_binds()
    else
       unbind_all()
       load_solo_binds()
    end
-   load_set_binds()
 end
 
 function load_multibox_binds()

@@ -13,6 +13,7 @@ require('logger')
 require('tables')
 require('strings')
 require('functions')
+require('chat')
 config = require('config')
 files = require('files')
 
@@ -112,28 +113,27 @@ function display_set(set_name)
       else
          log('Saved key sets:')
          for k,_ in pairs(settings.key_sets) do
-            log(format_display_name(k))
+            windower.add_to_chat(settings.key_color, format_display_name(k))
          end
       end
 
       if settings.active_key_set ~= '' then
-         log(format_display_name(settings.active_key_set)..' is currently active')
+         windower.add_to_chat(settings.action_color, format_display_name(settings.active_key_set):color(settings.key_color, settings.action_color)..' is currently active')
       else
          log('No set is currently active')
       end
    else                       -- Displays all keybinds in the given set
       if settings.key_sets:containskey(format_save_name(set_name)) then
-         log(set_name)
          if settings.key_sets[format_save_name(set_name)]:length() > 0 then
             for k,v in pairs(settings.key_sets[format_save_name(set_name)]) do
-               windower.add_to_chat(settings.key_color, format_display_name(k))
-               windower.add_to_chat(settings.action_color, v)
+               -- windower.add_to_chat(settings.key_color, format_display_name(k))
+               windower.add_to_chat(settings.action_color, format_display_name(k):color(settings.key_color, settings.action_color)..' '..v)
             end
          else
             log('This set is empty')
          end
       else
-         log(set_name..' did not match any saved sets')
+         windower.add_to_chat(settings.action_color, set_name:color(settings.key_color, settings.action_color)..' did not match any saved sets')
       end
    end
 end
@@ -207,8 +207,7 @@ function add_bind(args)
       settings.key_sets[settings.active_key_set][format_save_name(key)] = action
       settings:save('all')
       windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
-      windower.add_to_chat(settings.key_color, format_display_name(key))
-      windower.add_to_chat(settings.action_color, action)
+      windower.add_to_chat(settings.action_color, format_display_name(key):color(settings.key_color, settings.action_color)..' '..action)
       return true
    else
       log('Key entered is invalid, please verify and try again')
