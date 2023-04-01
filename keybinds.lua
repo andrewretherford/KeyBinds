@@ -43,6 +43,10 @@ windower.register_event('load', function()
    else
       load_solo_binds()
    end
+   
+   if settings.active_key_set ~= '' then
+      load_set_binds()
+   end
 end)
 
 windower.register_event('unload', function()
@@ -73,6 +77,8 @@ windower.register_event('addon command', function(command, ...)
       remove_bind(argstring)
    elseif command == 'load' or command == 'loadset' then
       load_file(argstring)
+   elseif command == 'exitall' then
+      exit_all()
    elseif command == 'test' then
       lastst = windower.ffxi.get_mob_by_target('lastst')
       log(lastst.id)
@@ -251,5 +257,17 @@ function load_file(file_name)
             end
          end
       end
+      if settings.multibox then
+         load_multibox_binds()
+      else
+         load_solo_binds()
+      end
+   end
+end
+
+function exit_all()
+   for i=1,5 do
+      windower.send_command('setkey escape down;wait 0.1;setkey escape up')
+      coroutine.sleep(0.2)
    end
 end

@@ -63,20 +63,20 @@ function format_display_name(saved_name)
    return saved_name
 end
 
-function format_save_name(set_name)
-   if set_name == '' then return false end
+function format_save_name(display_name)
+   if display_name == '' then return false end
 
-   set_name = set_name
+   display_name = display_name
       :gsub('~', 'shift_')
       :gsub('%^', 'ctrl_')
       :gsub('!', 'alt_')
       :gsub('%[', 'left_bracket')
       :gsub('%]', 'right_bracket')
       :gsub('%*', '_star')
-      :gsub('/', 'forward_slash')
+      :gsub('/', '_forward_slash')
       :gsub(' ', '_')
 
-   return set_name
+   return display_name
 end
 
 function remove(table, key)
@@ -91,9 +91,7 @@ function remove(table, key)
 end
 
 function unbind_all()
-   for _,v in pairs(keybinds) do
-      windower.send_command("unbind "..v)
-   end
+   windower.send_command('clearbinds')
 end
 
 function load_binds()
@@ -111,12 +109,14 @@ function load_multibox_binds()
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad7 send @all ub mount")
    windower.send_command("bind ~numpad3 send @all ub warp")   
+   windower.send_command("bind ~escape send @all kb exitall")   
 end
 
 function load_solo_binds()
    windower.send_command("bind ~numpad9 tm summontrusts")
    windower.send_command("bind ~numpad7 ub mount")
    windower.send_command("bind ~numpad3 ub warp")
+   windower.send_command("bind ~escape kb exitall") 
 end
 
 function load_set_binds()
