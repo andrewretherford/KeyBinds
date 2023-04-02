@@ -41,8 +41,8 @@ function format_send_keybind(key)
       :gsub('shift_', '~')
       :gsub('ctrl_', '^')
       :gsub('alt_', '!')
-      :gsub('left_bracket_', '[')
-      :gsub('right_bracket_', ']')
+      :gsub('left_bracket', '[')
+      :gsub('right_bracket', ']')
       :gsub('_star', '*')
       :gsub('_forward_slash', '/')
 end
@@ -95,12 +95,11 @@ function unbind_all()
 end
 
 function load_binds()
+   unbind_all()
+   load_set_binds()
    if settings.multibox == true then
-      unbind_all()
       load_multibox_binds()
-      load_set_binds()
    else
-      unbind_all()
       load_solo_binds()
    end
 end
@@ -126,5 +125,8 @@ function load_set_binds()
       for k,v in pairs(settings.key_sets[settings.active_key_set]) do
          windower.send_command("bind "..format_send_keybind(k)..' '..v)
       end
+   else
+      log('No active keyset')
+      return
    end
 end
