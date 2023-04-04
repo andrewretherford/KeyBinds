@@ -273,7 +273,7 @@ function load_file(file_name)
 end
 
 function exit_all()
-   for i=1,5 do
+   for i=1,7 do
       windower.send_command('setkey escape down;wait 0.1;setkey escape up')
       coroutine.sleep(0.2)
    end
