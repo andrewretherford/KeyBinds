@@ -4,9 +4,9 @@ _addon.version = '0.0.0'
 _addon.commands = {'kb', 'keybinds'}
 _addon.language = 'english'
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- Imports and Globals
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Windower Libraries
 require('logger')
@@ -23,23 +23,23 @@ require('data')
 
 -- Default Settings
 local defaults = {
-   color = T{},
    active_key_set = '',
    key_sets = T{},
    multibox = true,
 }
 
-defaults.color['green'] = 158
-defaults.color['red'] = 39
-defaults.color['text'] = 166
-defaults.color['message'] = 63
 
 settings = config.load(defaults)
-settings:save('all')
 
-----------------------------------------------------------------------------------------------------
+color = T{}
+color['green'] = 158
+color['red'] = 39
+color['text'] = 166
+color['message'] = 207
+
+---------------------------------------------------------------------------------------------------
 -- Addon Events
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 windower.register_event('load', function()
    if settings.multibox then
@@ -57,9 +57,9 @@ windower.register_event('unload', function()
    unbind_all()
 end)
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- Command Switch
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 windower.register_event('addon command', function(command, ...)
    command = command and command:lower()
@@ -89,21 +89,21 @@ windower.register_event('addon command', function(command, ...)
 
 end)
 
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 -- Core Functions
-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 function toggle_multibox(toggle)
    if toggle == '' then
       local multibox_state = ''
       if settings.multibox then
          multibox_state = 'On'
-         multibox_state = multibox_state:color(settings.color['green'], settings.color['message'])
+         multibox_state = multibox_state:color(color.green, color.message)
       else
          multibox_state = 'Off'
-         multibox_state = multibox_state:color(settings.color['red'], settings.color['message'])
+         multibox_state = multibox_state:color(color.red, color.message)
       end
-      windower.add_to_chat(settings.color['message'], 'Multibox mode is currently '..multibox_state)
+      windower.add_to_chat(color.message, 'Multibox mode is currently '..multibox_state)
    else
       if toggle == 'on' then
          settings.multibox = true
@@ -126,12 +126,12 @@ function display_set(set_name)
       else
          log('Saved key sets:')
          for k,_ in pairs(settings.key_sets) do
-            windower.add_to_chat(settings.color['green'], format_display_name(k))
+            windower.add_to_chat(color.green, format_display_name(k))
          end
       end
 
       if settings.active_key_set ~= '' then
-         windower.add_to_chat(settings.color['text'], format_display_name(settings.active_key_set):color(settings.color['green'], settings.color['text'])..' is currently active')
+         windower.add_to_chat(color.text, format_display_name(settings.active_key_set):color(color.green, color.text)..' is currently active')
       else
          log('No set is currently active')
       end
@@ -140,13 +140,13 @@ function display_set(set_name)
          if settings.key_sets[format_save_name(set_name)]:length() > 0 then
             for k,v in pairs(settings.key_sets[format_save_name(set_name)]) do
                -- windower.add_to_chat(settings.green, format_display_name(k))
-               windower.add_to_chat(settings.color['text'], format_display_name(k):color(settings.color['green'], settings.color['text'])..' '..v)
+               windower.add_to_chat(color.text, format_display_name(k):color(color.green, color.text)..' '..v)
             end
          else
             log('This set is empty')
          end
       else
-         windower.add_to_chat(settings.color['text'], set_name:color(settings.color['green'], settings.color['text'])..' did not match any saved sets')
+         windower.add_to_chat(color.text, set_name:color(color.green, color.text)..' did not match any saved sets')
       end
    end
 end
@@ -220,7 +220,7 @@ function add_bind(args)
       settings.key_sets[settings.active_key_set][format_save_name(key)] = action
       settings:save('all')
       windower.send_command("unbind "..format_send_keybind(key).."; wait 0.5; bind "..format_send_keybind(key).." "..action)
-      windower.add_to_chat(settings.color['text'], format_display_name(key):color(settings.color['green'], settings.color['text'])..' '..action)
+      windower.add_to_chat(color.text, format_display_name(key):color(color.green, color.text)..' '..action)
       return true
    else
       log('Key entered is invalid, please verify and try again')
